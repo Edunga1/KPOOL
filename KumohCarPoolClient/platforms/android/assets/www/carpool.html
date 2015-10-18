@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>Insert title here</title>
+<!-- CSS import -->
+<!-- libraries -->
+<link rel="stylesheet" type="text/css" href="./css/lib/DateTimePicker.css">
+<!-- system -->
+<link rel="stylesheet" type="text/css" href="./css/kcp_common.css">
+<link rel="stylesheet" type="text/css" href="./css/font-icon.css">
+</head>
+<body ng-app="cpl">
+<header>
+</header>
+<nav class="gnb" ng-controller="GnbCtrl">
+	<div class="time">2015 6/26</div>
+	<div class="btn_menu" ng-click="menuStatus.menu = !menuStatus.menu">
+		<i class="ico_menu"></i>
+	</div>
+</nav>
+<nav class="snb" ng-controller="SnbCtrl" ng-show="menuStatus.menu" ng-click="menuStatus.menu = !menuStatus.menu">
+	<div class="box_menu" ng-click="$event.stopPropagation()">
+		<div class="box_profile">
+			<div class="box_img"></div>
+			<p class="txt_name">롱스톤#1a5s</p>
+		</div>
+		<ul class="snb_list_menu">
+			<li class="row">
+				<div class="col_4 box_icon">
+					<i class="ico_pen"></i>
+				</div>
+				<div class="col_6">
+					Write
+				</div>
+			</li>
+			<li class="row" ng-click="menuStatus.openModal('msg')">
+				<div class="col_4 box_icon">
+					<i class="ico_letter"></i>
+				</div>
+				<div class="col_6">
+					Message
+				</div>
+			</li>
+			<li class="row" ng-click="menuStatus.openModal('dest')">
+				<div class="col_4 box_icon">
+					<i class="ico_map"></i>
+				</div>
+				<div class="col_6">
+					Target
+				</div>
+			</li>
+			<li class="row">
+				<div class="col_4 box_icon">
+					<i class="ico_ticket"></i>
+				</div>
+				<div class="col_6">
+					Ticket
+				</div>
+			</li>
+			<li class="row">
+				<div class="col_4 box_icon">
+					<i class="ico_user"></i>
+				</div>
+				<div class="col_6">
+					MyPool
+				</div>
+			</li>
+		</ul>
+	</div>
+</nav>
+<!-- 카풀 목록 부분 -->
+<article class="cont_board">
+	<div id="listCarpool" ng-controller="CarpoolListController">
+		<div id="carpoolmap"></div>
+		<div class="box_carpool shadow_s" ng-repeat="c in carpools">
+			<div class="row box_summary" ng-click="toggleDetail($index);readmore($event,$index)">
+				<div class="col_4 center txt_point box_time">
+					{{c.formattedTime}}
+				</div>
+				<div class="col_6">
+					<div class="row box_desc_rout">
+						<div class="col_5 center txt_point">
+							FROM
+						</div>
+						<div class="col_5 center txt_point">
+							TO
+						</div>
+					</div>
+					<div class="row box_rout">
+						<div class="col_5 center">
+							{{c.startPoint}}
+						</div>
+						<div class="col_5 center">
+							{{c.arrivePoint}}
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="detail" ng-show="$parent.cidx == $index">
+				<div class="row">
+					<div class="col_2 center">
+						<i class="ico_car txt_point"></i>
+					</div>
+					<div class="col_3 center">
+						{{c.carType}}
+					</div>
+					<div class="col_2 center">
+						<i class="ico_user txt_point"></i>
+					</div>
+					<div class="col_3 center">
+						<span>{{c.currentPersons}}</span> / <span>{{c.numberOfPersons}}</span>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col_10" mapcontainer>
+					</div>
+				</div>
+				<div class="row btn" ng-show="!c.permission.isWriter && !c.permission.isAttendant" ng-click="requestCarpoolAttend($index)">
+					<div class="col_10">
+						카풀 하기
+					</div>
+				</div>
+				<div class="row btn" ng-show="c.permission.isAttendant" ng-click="requestCarpoolCancel($index)">
+					<div class="col_10">
+						카풀 취소
+					</div>
+				</div>
+				<div class="row btn" ng-show="c.permission.isWriter">
+					<div class="col_10">
+						수정 / 삭제 하기
+					</div>
+				</div>
+				<div class="row">
+					<div class="col_10">
+						<ul class="list_cmt">
+							<li ng-repeat="cmt in c.comments">
+								<div class="box_cmt_wirter">
+									{{cmt.user.alias}}
+								</div>
+								<div class="box_cmt_contents">
+									{{cmt.comment}}
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</article>
+<!-- 모달 부분 -->
+<article ng-controller="ModalCtrl">
+	<div class="overlay" ng-show="menuStatus.modal()" ng-click="menuStatus.closeModal()">
+		<!-- 메시지 -->
+		<div id="modalMessage" class="modal" ng-controller="ModalMsgCtrl" ng-show="menuStatus.modal('msg')" ng-click="$event.stopPropagation()">
+			<div class="wrap_header line_bottom">
+				<div class="tit">메시지 목록</div>
+			</div>
+			<div class="wrap_body">
+				<div class="box_list_msg">
+					<ul id="listMessage" class="list_msg">
+						<li ng-repeat="msg in messages">{{msg.contents}}</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 목적지 / 매칭 -->
+		<div id="modalDestination" class="modal" ng-controller="ModalDestCtrl" ng-show="menuStatus.modal('dest')" ng-click="$event.stopPropagation()">
+			<div class="row box_wrap">
+				<div class="col_75 box_cont">
+					<div id="contDestSetup" ng-init="tabid = 1" ng-show="tabid == 1">
+						<div class="row row_rout">
+							<div class="col_5 desc">
+								출발지
+							</div>
+							<div class="col_5 desc">
+								도착지
+							</div>
+						</div>
+						<div class="row boundary">
+							<div class="col_5">
+								<input id="setSrc" type="text" ng-model="destination.startPoint">
+							</div>
+							<div class="col_5">
+								<input id="setDest" type="text" ng-model="destination.arrivePoint">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col_10 desc col_time">
+								출발시간
+							</div>
+						</div>
+						<div class="row boundary">
+							<div class="col_10">
+								<input id="setTime" type="datetime-local" data-field="datetime" data-startend="start" ng-model="destination.carpoolTime">
+								<div id="dtBox"></div>
+							</div>
+						</div>
+						<div class="row desc">
+							<div class="col_4">
+							</div>
+							<div class="col_6">
+								알람 On? <input id="cbAlarmToggle" type="checkbox">
+							</div>
+						</div>
+					</div>
+					<div id="contMatching" ng-show="tabid == 2">
+						<div class="row boundary">
+							<div id="matchingResult" class="col_10"></div>
+						</div>
+						<div class="row">
+							<div class="col_10 right">
+								<input id="btnMRCC" class="btn_done" type="button" value="카풀만들기">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col_25 box_tab">
+					<div id="tabDestSetup" class="tab" ng-class="{active: tabid == 1}" ng-click="tabid = 1">
+						<i class="ico ico_location"></i>
+					</div>
+					<div id="tabMatching" class="tab" ng-class="{active: tabid == 2}" ng-click="tabid = 2">
+						<i class="ico ico_user"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</article>
+<footer>
+</footer>
+<!-- JS import -->
+<!-- cordova -->
+<script src="./cordova.js"></script>
+<!-- jQuery -->
+<!-- <script src="./js/lib/jquery-1.11.3.min.js"></script> -->
+<!-- Angular js -->
+<script src="./js/lib/angular.min.js"></script>
+<!-- Daum map api -->
+<script type="text/javascript" src="http://apis.daum.net/maps/maps3.js?apikey=fc0c5af4de65a88b6a708e9855ff9fe1&libraries=services"></script>
+<!-- DateTimePicker -->
+<!-- <script src="./js/lib/DateTimePicker.js"></script> -->
+<!-- system scripts -->
+<!-- <script src="./js/list-scroll.js"></script> -->
+<!-- <script src="./js/modal.js"></script> -->
+<!-- <script src="./js/loading.js"></script> -->
+<script src="./js/kcp.js"></script>
+<script src="./js/kcp_carpool.js"></script>
+</body>
+</html>

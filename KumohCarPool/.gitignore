@@ -1,0 +1,9 @@
+.settings/
+/target/
+.classpath
+.project
+.settings/
+target/
+context-datasource.xml
+#Mac OS
+.DS_Store

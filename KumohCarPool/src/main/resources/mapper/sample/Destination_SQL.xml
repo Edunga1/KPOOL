@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="destination">
+	<resultMap id="destinationResultMap" type="kcp.sample.vo.Destination" >
+		<id column="userId" property="userId"/>
+		<result column="startPoint" property="startPoint" />
+		<result column="arrivePoint" property="arrivePoint" />
+		<result column="carpoolTime" property="carpoolTime"  javaType="java.sql.Timestamp" />
+		<result column="regId" property ="regId" />
+ 	</resultMap>
+
+  <!-- 모든 목적지를 로드 한다. -->
+  <select id="selectDestination" parameterType="map" resultMap="destinationResultMap">
+  	select * from Destination 
+  </select>
+
+  <!-- 목적지 하나 넣는다. -->
+   <insert id="insertDestination" parameterType="map">
+    insert into Destination (userId,startPoint,arrivePoint,carpoolTime,regId) values(#{userId},#{startPoint},#{arrivePoint},#{carpoolTime},#{regId})
+  </insert>
+    
+   <!-- 목적지 하나를 불러 온다.  --> 
+   <select id="selectDestOne" parameterType="map" resultMap="destinationResultMap">
+   	select * from Destination where userId = #{userId}
+   </select>
+
+	<!-- 목적지를 지운다 -->
+   <select id="deleteDestination" parameterType="map" >
+   	delete from Destination where userId = #{userId}
+   </select>
+	
+	
+   <!-- 목적지를 업데이트 한다. -->
+ <update id="updateDestination" parameterType="map" >
+   	 update Destination
+   	 	<set>
+			<if test="startPoint !=null">startPoint=#{startPoint},</if>
+			<if test="arrivePoint !=null">arrivePoint=#{arrivePoint},</if>
+			<if test="carpoolTime !=null">carpoolTime=#{carpoolTime},</if>
+			<if test="regId !=null">regId=#{regId},</if>
+		</set>
+		where userId = #{userId}
+   </update>
+</mapper>

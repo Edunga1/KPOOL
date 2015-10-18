@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="message">
+	<resultMap id="messageResultMap" type="kcp.sample.vo.Message" >
+		<id column="messageId" property="messageId"/>
+		<result column="userId" property="userId" />
+		<result column="contents" property="contents" />
+ 	</resultMap>
+
+  <!-- 모든 메시지를 로드한다. -->
+  <select id="selectMessage" parameterType="map" resultMap="messageResultMap">
+  	select * from Message where userId = #{userId}
+  </select>
+  
+  <!-- 같은 메시지를 여러 사용자가 한번에 insert 되어야 한다.  userId는 변하면서 message 값은 고정이어야 한다.-->
+    <insert id="insertMessage" parameterType="map">
+  	insert into Message(userId,contents) values
+	    <foreach collection="userIds" item="userId" separator="," > 
+	  			(#{userId},#{contents})
+	  	</foreach>
+	</insert>  	
+</mapper>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="carpoolboard">
+	<!-- 카풀 게시판 entity -->
+	<resultMap id="carpoolboardResultMap" type="kcp.sample.vo.CarpoolBoard">
+		<id column="cpBoardId" property="cpBoardId" />
+		<result column="writer" property="userId" />
+		<result column="startPoint" property="startPoint" />
+		<result column="arrivePoint" property="arrivePoint" />
+		<result column="startLatitude" property="startLatitude" />
+		<result column="startLongitude" property="startLongitude" />
+		<result column="carType" property="carType" />
+		<result column="numberOfPersons" property="numberOfPersons" />
+		<result column="currentPersons" property="currentPersons" />
+		<result column="carpoolTime" property="carpoolTime" javaType="java.sql.Timestamp" />
+		<result column="contents" property="contents" />
+		<result column="commentNums" property="commentNums" />
+		<result column="serialNumber" property="serialNumber"/>
+	</resultMap>
+
+	<!-- 카풀 참여 entity -->
+	<resultMap id="attendantResultMap" type="kcp.sample.vo.Attendant">
+		<id column="cpBoardId" property="cpBoardId" />
+		<result column="userId" property="userId" />
+	</resultMap>
+
+	<!-- 댓글 entity -->
+	<resultMap id="commentResultMap" type="kcp.sample.vo.Comment">
+		<id column="commentId" property="commentId" />
+		<result column="boardId" property="cpBoardId" />
+		<result column="comment" property="comment" />
+		<result column="isMine" property="isMine" javaType="boolean" />
+		<collection property="user" column="userId" javaType="kcp.sample.vo.User" resultMap="userResultMap" />
+	</resultMap>
+	
+	<!-- 사용자 entity -->
+	<resultMap id="userResultMap" type="kcp.sample.vo.User">
+		<id column="userId" property="userId" />
+		<result column="alias" property="alias" />
+	</resultMap>
+
+	<!-- 전체 카풀 목록 로드 -->
+	<select id="selectBoardList" parameterType="map" resultMap="carpoolboardResultMap">
+		<![CDATA[
+SELECT * FROM Carpoolboard WHERE
+				TIMESTAMP(Now()) < carpoolTime ORDER BY carpoolTime ASC LIMIT #{pageIndex}, #{pageNumber}
+		]]>
+	</select>
+
+	<!-- 사용자가 등록하거나 참석한거만 가져온다. -->
+	<select id="selectMyList" parameterType="map" resultMap="carpoolboardResultMap">
+	<![CDATA[
+SELECT
+		*
+	FROM CarpoolBoard as cp 
+	LEFT JOIN
+		attendant AS att 
+	ON
+		cp.cpBoardId = att.cpBoardId 
+	WHERE
+		att.userId = #{userId}
+		OR cp.writer = #{userId}
+		and Timestamp(NOW() - INTERVAL 1 DAY) < carpoolTime 
+	]]>
+	</select><!--attendant cpBoardId 바꿔야할수도잇 -->
+
+	<!-- 카풀 게시글 하나만 로드 -->
+	<select id="selectOne" parameterType="map" resultMap="carpoolboardResultMap">
+		SELECT
+			*,md5(cpBoardId) as serialNumber
+		FROM
+			Carpoolboard
+		WHERE
+			cpBoardId = #{cpBoardId}
+	</select>
+
+	<!-- 일별 카풀 게시글 카운트 -->
+	<select id="selectDayCount" resultType="map">
+		SELECT
+			DATE_FORMAT(carpoolTime, '%Y%m%d'),
+			count(*)
+		FROM
+			Carpoolboard
+		GROUP BY
+			date_format(carpoolTime, '%Y%m%d')
+		ORDER BY
+			date_format(carpoolTime,'%Y%m%d')
+	</select>
+
+	<!-- 카풀 게시글 등록 -->
+	<insert id="insertBoard" parameterType="map" useGeneratedKeys="true"
+		keyProperty="cpBoardId">
+		INSERT
+		INTO
+			CarpoolBoard
+			(writer,startPoint,arrivePoint,startLatitude,startLongitude,carType,numberOfPersons,carpoolTime,contents)
+		VALUES
+			(#{userId},#{startPoint},#{arrivePoint},#{startLatitude},#{startLongitude},#{carType},#{numberOfPersons},#{carpoolTime},#{contents})
+	</insert>
+	
+	<!-- 카풀 게시글 내용 수정 -->
+	<update id="updateBoard" parameterType="map">
+		UPDATE Carpoolboard
+		<set>
+			<if test="startPoint !=null">startPoint=#{startPoint},</if>
+			<if test="arrivePoint !=null">arrivePoint=#{arrivePoint},</if>
+			<if test="startLatitude !=null">startLatitude=#{startLatitude},</if>
+			<if test="startLongitude !=null">startLongitude=#{startLongitude},</if>
+			<if test="carType !=null">carType=#{carType},</if>
+			<if test="numberOfPersons !=null">numberOfPersons=#{numberOfPersons},</if>
+			<if test="currentPersons !=null">currentPersons=#{currentPersons},</if>
+			<if test="carpoolTime !=null">carpoolTime=#{carpoolTime},</if>
+			<if test="contents !=null">contents=#{contents}</if>
+		</set>
+		WHERE
+			cpBoardId = #{cpBoardId}
+	</update>
+
+	<!-- 카풀 게시글 삭제 -->
+	<delete id="deleteBoard" parameterType="int">
+		DELETE
+		FROM
+			Carpoolboard
+		where
+		cpBoardId = #{cpBoardId}
+	</delete>
+
+	<!-- 현재 인원 업데이트 -->
+	<update id="updatePersonNumber" parameterType="map">
+		UPDATE
+			CarpoolBoard
+		SET
+			currentPersons = #{currentPersons}
+		WHERE
+			cpBoardId = #{cpBoardId}
+	</update>
+
+	<!-- 카풀 참여하기 -->
+	<insert id="insertAttendant" parameterType="map">
+		INSERT
+		INTO
+			Attendant
+			(cpBoardId,userId)
+		VALUES
+			(#{cpBoardId},#{userId})
+	</insert>
+
+	<!-- 카풀 참여취소하기 -->
+	<delete id="deleteAttendant" parameterType="map" >
+		DELETE
+		FROM
+			Attendant
+		WHERE
+			userId = #{userId}
+	</delete>
+
+	<!-- 참여자 한명 로드하기 -->
+	<select id="selectOneAttendant" parameterType="map" resultType="map">
+		SELECT
+			*
+		FROM
+			Attendant
+		WHERE
+			cpBoardId = #{cpBoardId} and userId = #{userId}
+	</select>
+
+	<!-- 댓글 조회 , 검색키 : cpBoardId -->
+	<select id="selectComment" parameterType="map" resultMap="commentResultMap">
+		SELECT
+			*,
+			(CASE                
+				WHEN u.userId = #{userId}
+				THEN 1
+				ELSE 0
+			END) AS isMine
+		FROM
+			Comment AS c,
+			User AS u
+		WHERE
+			c.userId = u.userId
+			AND c.boardId = #{cpBoardId}
+		ORDER BY
+			c.commentId ASC
+	</select>
+
+	<!-- 댓글 등록 -->
+	<insert id="insertComment" parameterType="map">
+		INSERT
+		INTO
+			Comment
+			(userId,boardId,comment)
+		VALUES
+			(#{userId}, #{cpBoardId}, #{comment})
+	</insert>
+
+	<!-- 댓글 삭제 -->
+	<delete id="deleteComment" parameterType="map">
+		DELETE
+		FROM
+			Comment
+		WHERE
+			boardId = #{commentId}
+	</delete>
+</mapper>

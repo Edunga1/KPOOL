@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>Insert title here</title>
+<!-- CSS import -->
+<!-- libraries -->
+<link rel="stylesheet" type="text/css" href="./css/lib/DateTimePicker.css">
+<!-- system -->
+<link rel="stylesheet" type="text/css" href="./css/kcp_common.css">
+<link rel="stylesheet" type="text/css" href="./css/font-icon.css">
+</head>
+<body>
+<header>
+</header>
+<nav class="gnb" role="navigation">
+	<!-- 퀵 메뉴 -->
+	<ul class="list_quickmenu">
+		<li id="btnMessage">
+			<i class="ico ico_letter"></i>
+			<div class="txt_desc">메시지</div>
+		</li>
+		<li id="btnDest">
+			<i class="ico ico_target"></i>
+			<div class="txt_desc">목적지설정</div>
+		</li>
+	</ul>
+	<!-- 스크롤 메뉴 -->
+	<ul class="list_scrollmenu" id="listScroll">
+		<!-- <li class="ico_bus box_o"></li> -->
+		<li id="btnMyCarpool" class="ico ico_user"><a href="./carpool.html?my=1"></a></li>
+		<li class="ico ico_plus"><a class="link" href="./carpool_add.html"></a></li>
+		<!-- <li id="btnAlarm" class="ico ico_bell"></li> -->
+		<li id="btnAllCarpool" class="ico ico_car"></li>
+	</ul>
+</nav>
+<!-- 카풀 목록 부분 -->
+<article id="boardContent">
+	<div id="contDate" class="cont_date">
+		<div class="wrap_date">
+			<span id="nowPosTime">--/--</span> 
+			<span class="ico ico_car"></span>
+			<span>--</span>
+		</div>
+	</div>
+	<div class="timeline_vc cont_board">
+		<!-- ajax를 통해 추가되는 게시글 부분 -->
+		<div id="boxListCarpool">
+			<ul id="listCarpool">
+			</ul>
+		</div>
+		<!-- 게시글 추가 로드 로딩 부분 -->
+		<div id="contBoardBottom">
+		</div>
+	</div>
+</article>
+<!-- 상세보기 부분 -->
+<article>
+	<article id="detailContent">
+		<div class="cont_carpoolmenu">
+			<ul class="list_carpoolmenu">
+				<li><input id="btnModify" class="btn_done" type="button" value="수정"></li>
+				<li><input id="btnDelete" class="btn_done" type="button" value="삭제"></li>
+				<li><input id="btnAttend" class="btn_done" type="button" value="카풀!!"></li>
+				<li><input id="btnCancel" class="btn_done" type="button" value="카풀취소"></li>
+				<li><input id="btnBack" class="btn_cancel" type="button" value="돌아가기"></li>
+			</ul>
+		</div>
+		<div id="contDetail" class="cont_detail">
+			<div class="box_detail">
+				<div>
+				<div>
+					<b id="detailArrivePoint">목적지</b>
+					<span id="detailContents">카풀 내용</span>
+				</div>
+				<div class="box_path">
+					<i class="ico_arrow-up"></i>
+				</div>
+				<div>
+					<b id="detailStartPoint">출발지</b>
+					<span id="carpoolAddr">카풀 위치 주소</span>
+				</div>
+				<div class="row box_cartype">
+					<div class="col_5">
+						<i class="ico ico_car"></i>
+						<span id="detailCarType">차량정보</span>
+					</div>
+					<div class="col_5">
+						<i class="ico ico_calendar"></i>
+						<span id="detailCarpoolTime">19일 09:44</span>
+					</div>
+				</div>
+				<div id="detailAttenders">
+					<i class="ico ico_user"></i>
+					<i class="ico ico_user ico_grey"></i>
+				</div>
+				<div>
+					<div id="map"></div>
+				</div>
+				<div>
+					<ul id="listComments" class="list_cmt">
+						<li><span class="box_cmt_contents">댓글 내용</span><span class="box_cmt_name">사용자</span></li>
+					</ul>
+					<div class="wrap_cmt_write">
+						<div class="box_cmt_tf">
+							<textarea id="inpCmt"></textarea>
+						</div>
+						<input id="btnCmt" type="button" value="등록">
+					</div>
+				</div>
+				</div>
+			</div>
+		</div>
+	</article>
+</article>
+<!-- 모달 부분 -->
+<article>
+	<div id="modalMessage" class="modal">
+		<div class="wrap_header line_bottom">
+			<div class="tit">메시지 목록</div>
+		</div>
+		<div class="wrap_body">
+			<div class="box_list_msg">
+				<ul id="listMessage" class="list_msg">
+					<li><b>오후 4:30 학교 -> 옥계 글</b>이 등록되었습니다.</li>
+					<li><b>오후 4:30 학교 -> 옥계 글</b>이 등록되었습니다.</li>
+					<li><b>오후 4:30 학교 -> 옥계 글</b>이 등록되었습니다.</li>
+					<li><b>오후 4:30 학교 -> 옥계 글</b>이 등록되었습니다.</li>
+					<li><b>오후 4:30 학교 -> 옥계 글</b>이 등록되었습니다.</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div id="modalDestination" class="modal">
+		<div class="row box_wrap">
+			<div class="col_75 box_cont">
+				<div id="contDestSetup">
+					<div class="row row_rout">
+						<div class="col_5 desc">
+							출발지
+						</div>
+						<div class="col_5 desc">
+							도착지
+						</div>
+					</div>
+					<div class="row boundary">
+						<div class="col_5">
+							<input id="setSrc" type="text">
+						</div>
+						<div class="col_5">
+							<input id="setDest" type="text">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col_10 desc col_time">
+							출발시간
+						</div>
+					</div>
+					<div class="row boundary">
+						<div class="col_10">
+							<input id="setTime" type="text" data-field="datetime" data-startend="start" readonly>
+							<div id="dtBox"></div>
+						</div>
+					</div>
+					<div class="row desc">
+						<div class="col_4">
+						</div>
+						<div class="col_6">
+							알람 On? <input id="cbAlarmToggle" type="checkbox">
+						</div>
+					</div>
+				</div>
+				<div id="contMatching">
+					<div class="row boundary">
+						<div id="matchingResult" class="col_10"></div>
+					</div>
+					<div class="row">
+						<div class="col_10 right">
+							<input id="btnMRCC" class="btn_done" type="button" value="카풀만들기">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col_25 box_tab">
+				<div id="tabDestSetup" class="tab" data-target="#contDestSetup">
+					<i class="ico ico_search"></i>
+				</div>
+				<div id="tabMatching" class="tab" data-target="#contMatching">
+					<i class="ico ico_target"></i>
+				</div>
+			</div>
+		</div>
+	</div>
+</article>
+<footer>
+</footer>
+<!-- JS import -->
+<!-- cordova -->
+<script src="./cordova.js"></script>
+<!-- jQuery -->
+<script src="./js/lib/jquery-1.11.3.min.js"></script>
+<!-- Daum map api -->
+<script type="text/javascript" src="http://apis.daum.net/maps/maps3.js?apikey=fc0c5af4de65a88b6a708e9855ff9fe1&libraries=services"></script>
+<!-- DateTimePicker -->
+<script src="./js/lib/DateTimePicker.js"></script>
+<!-- system scripts -->
+<script src="./js/list-scroll.js"></script>
+<script src="./js/modal.js"></script>
+<script src="./js/loading.js"></script>
+<script src="./js/kcp.js"></script>
+<script src="./js/kcp_carpool.js"></script>
+</body>
+</html>

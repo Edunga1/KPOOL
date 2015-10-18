@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html ng-app="kcp">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>Insert title here</title>
+<!-- CSS import -->
+<link rel="stylesheet" type="text/css" href="./css/lib/angularjs-datetime-picker.css">
+<link rel="stylesheet" type="text/css" href="./css/font-icon.css">
+<link rel="stylesheet" type="text/css" href="./css/kcp_common.css">
+</head>
+<body class="body_serv2" ng-controller="WriteFormCtrl">
+<header>
+</header>
+<nav class="gnb_bt" role="navigation">
+</nav>
+<article>
+	<form name="form" ng-submit="write()">
+	<div class="cont_forms shdw">
+		<div class="row">
+			<div class="col_10 desc">
+				날짜
+			</div>
+		</div>
+		<div class="row boundary">
+			<div class="col_10">
+				<input class="u left" type="text" name="carpoolTime" ng-model="formData.carpoolTime" datetime-picker date-format="yyyy-MM-dd HH:mm" readonly>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col_5 desc">
+				출발지
+			</div>
+			<div class="col_5 desc">
+				목적지
+			</div>
+		</div>
+		<div class="row boundary">
+			<div class="col_5">
+				<input class="u left" type="text" name="startPoint" ng-model="formData.startPoint">
+			</div>
+			<div class="col_5">
+				<input class="ul left" type="text" name="arrivePoint" ng-model="formData.arrivePoint">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col_5 desc">
+				차량번호/종류
+			</div>
+			<div class="col_5 desc">
+				카풀 인원
+			</div>
+		</div>
+		<div class="row boundary">
+			<div class="col_5">
+				<input class="u left" type="text" name="carType" ng-model="formData.carType">
+			</div>
+			<div class="col_5">
+				<input class="ul left" type="number" name="numberOfPersons" min="2" max="99" ng-model="formData.numberOfPersons">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col_10 desc">
+				카풀 위치
+			</div>
+		</div>
+		<div class="row boundary">
+			<div class="col_10" ng-click="modal = 'map'">
+				<i class="ico ico_location before x15"></i>
+				<input type="text" class="u" placeholder="클릭해서 지정해 주세요." readonly ng-model="formData.startPosAddr">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col_10 desc">
+				메모
+			</div>
+		</div>
+		<div class="row boundary">
+			<div class="col_10">
+				<textarea class="flat" name="comment" ng-model="formData.comment" ng-disabled="isModifyMode" placeholder="카카오톡 아이디 등 연락대책을 강구하여 참여하지 않는 상황을 막으세요!"></textarea>
+			</div>
+		</div>
+	</div>
+	<div class="cont_forms_menu">
+		<input class="btn_blank fgw" type="button" value="취소" ng-click="goToList()">
+		<input class="btn_blank fgw" type="button" value="삭제" ng-click="deleteCarpool()">
+		<input class="btn_blank fgw" type="submit" value="수정" ng-show="isModifyMode" ng-click="modifyCarpool()">
+		<input class="btn_blank fgw" type="submit" value="등록" ng-hide="isModifyMode" ng-click="addCarpool()">
+	</div>
+	</form>
+</article>
+<!-- 모달 부분 -->
+<article>
+	<div class="overlay" ng-show="modal" ng-click="modal = ''">
+		<div class="modal" id="modalMap" ng-show="modal == 'map'" ng-click="$event.stopPropagation()">
+			<div class="wrap_header">
+				<div class="tit">
+					카풀 위치 지정
+				</div>
+			</div>
+			<div class="wrap_body">
+				<div id="map" map>
+				</div>
+			</div>
+			<div class="wrap_footer">
+				<input class="btn_blank" type="button" value="학교" ng-click="MapService.moveMarker(36.1425305, 128.394327)">
+				<input class="btn_blank" type="button" value="대구" ng-click="MapService.moveMarker(35.870913, 128.593993)">
+				<input class="btn_blank" type="button" value="옥계" ng-click="MapService.moveMarker(36.1368618, 128.4118315)">
+				<input class="btn_blank fgp" type="button" value="설정" ng-click="setCarpoolPos(); modal = ''">
+			</div>
+		</div>
+	</div>
+</article>
+<footer>
+</footer>
+<!-- JS import -->
+<script src="./cordova.js"></script>
+<script src="./js/lib/angular.min.js"></script>
+<script type="text/javascript" src="http://apis.daum.net/maps/maps3.js?apikey=fc0c5af4de65a88b6a708e9855ff9fe1&libraries=services"></script>
+<script src="./js/lib/angularjs-datetime-picker.min.js"></script>
+<script src="./js/kcp_carpool.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="user">
+	<!-- 사용자 entity -->
+	<resultMap id="userResultMap" type="kcp.sample.vo.User">
+		<id column="userId" property="userId" />
+		<result column="alias" property="alias" />
+		<result column="aliasResourceIndex" property="aliasResourceIndex"/>
+	</resultMap>
+	
+	<!-- 사용자 추가 -->
+	<insert id="insertUser" parameterType="map">
+		insert into User values( #{userId},#{alias},#{aliasResourceIndex} );
+	</insert>
+	
+	<select id="selectUser" parameterType="map" resultMap="userResultMap">
+		select * from User where userId = #{userId};
+	</select>
+</mapper>
+
