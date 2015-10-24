@@ -409,7 +409,7 @@ input[type=text], input[type=number], select {
 	z-index: 3;
 	top: 0;
 	width: 100%;
-	height: 10%;
+	height: 9%;
 }
 .gnb .btn_menu {
 	position: absolute;

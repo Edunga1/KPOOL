@@ -326,7 +326,8 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 				"startPoint": start,
 				"arrivePoint": arrive,
 				"carpoolTime": time,
-				"userId": KCP.deviceid
+				"userId": KCP.deviceid,
+				"regid": KCP.regid
 			}
 		);
 	}
