@@ -8,7 +8,7 @@
 
 // 카풀 서버와 디바이스 정보
 var KCP = {
-	domain:				"http://localhost:8080/KumohCarPool",	// 서버 URL
+	domain:				"http://192.168.219.124:8080/KumohCarPool",	// 서버 URL
 	deviceid:			null,									// device id
 	regid:				null,									// google gcm regid
 };
