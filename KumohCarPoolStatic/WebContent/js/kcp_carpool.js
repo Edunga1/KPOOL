@@ -1,50 +1,26 @@
+/**
+*	브라우저에서 테스트
+*		KCP.deviceid의 값을 null이 아닌 임의의 값으로 둔다.
+*		angularjs 부트스트랩 콜백 이벤트를 deviceready 가 아닌 DOMContentLoaded 로 둔다.
+*/
 (function(window) {
 "use strict"
 
 // 카풀 서버와 디바이스 정보
 var KCP = {
 	domain:				"http://localhost:8080/KumohCarPool",	// 서버 URL
-	deviceid:			"a",									// device id
+	deviceid:			null,									// device id
 	regid:				null,									// google gcm regid
 };
 
-// 디바이스 정보 초기화
-(function(){
-	// 등록이 필요한지 여부 반환
-	var isNeedRegistration = function(){
-		var today = new Date();
-		if(window.localStorage.vdate && new Date(parseInt(window.localStorage.vdate)).getTime() > today.getTime())
-			return false;
-		else
-			return true;
-	}
-	// 유효기간 갱신
-	var renewVdate = function(){
-		var time = new Date();
-		window.localStorage.vdate = time.getTime() + 24*60*60*1000;
-	}
-	// 디바이스 정보 획득
-	var setDeviceInfo = function(){
-		// 디바이스 ID 획득
-		if(KCP.deviceid == null){
-			KCP.deviceid = device.uuid;
-		}
-		// 푸시 정보 획득
-		if(device.platform.toUpperCase() == 'ANDROID'){
-			window.plugins.pushNotification.register(successHandler, errorHandler, {
-				"senderID" : "60318613763",	// Google GCM 서비스에서 생성한 Project Number를 입력한다.
-				"ecb" : "onNotificationGCM"	// 디바이스로 푸시가 오면 onNotificationGCM 함수를 실행할 수 있도록 ecb(event callback)에 등록한다.
-			});
-		}else{
-			// PushPlugin을 설치했다면 window.plugins.pushNotification.register를 이용해서 iOS 푸시 서비스를 등록한다.
-			window.plugins.pushNotification.register(tokenHandler, errorHandler, {
-				"badge":"true", // 뱃지 기능을 사용한다.
-				"sound":"true", // 사운드를 사용한다.
-				"alert":"true", // alert를 사용한다.
-				"ecb": "onNotificationAPN" // 디바이스로 푸시가 오면 onNotificationAPN 함수를 실행할 수 있도록 ecb(event callback)에 등록한다.
-			});
-		}
-	}
+// mobile 뒤로가기 버튼 막음
+document.addEventListener("backbutton", function (e){
+	e.preventDefault();
+}, false);
+
+// device 정보 획득 후 angularjs 부트스트랩
+document.addEventListener("deviceready", function(){
+
 	// 푸쉬 Receive / Regist Callback function - ANDROID
 	// onNotification***은 반드시 window의 멤버함수로 존재해야 함
 	window.onNotificationGCM = function(e){
@@ -79,6 +55,7 @@ var KCP = {
 			break;
 		}
 	}
+	
 	// 푸쉬 Receive / Regist Callback function - IOS
 	window.onNotificationAPN = function(event){
 		// 푸시 메세지에 alert 값이 있을 경우
@@ -95,44 +72,54 @@ var KCP = {
 			window.plugins.pushNotification.setApplicationIconBadgeNumber(successHandler, errorHandler, event.badge);
 		}
 	}
-	// 푸쉬 State Callback functions
-	var tokenHandler = function(result){
-		console.log('deviceToken:' + result);
-	}
-	var errorHandler = function(err){
-		console.log('error:' + err);
-	}
-	var successHandler = function(result){
-		console.log('result:'+result);
-	}
 
-	document.addEventListener("deviceready", function(){
-		// 디바이스 정보 획득
-		setDeviceInfo();
-		// 사용자 등록 유효기간이 지났으면 서버에 등록 요청
-		if(isNeedRegistration()){
-			if(KCP.deviceid){
-				$.ajax({
-					url	: KCP.domain+"/carpoolboard/insertUser.do",
-					data: {
-						"userId": KCP.deviceid
-					},
-					type: "post",
-					success: function(response){
-						renewVdate();
-					}
-				});
-			}
+	// 디바이스 ID 획득
+	if(KCP.deviceid == null){
+		KCP.deviceid = device.uuid;
+	}
+	
+	// 푸시 정보 획득
+	if(typeof device !== "undefined"){
+		if(device.platform.toUpperCase() == 'ANDROID'){
+			window.plugins.pushNotification.register(function(result){
+				console.log("result:" + result);
+			}, function(err){
+				console.log("error:" + err);
+			}, {
+				"senderID" : "60318613763",	// Google GCM 서비스에서 생성한 Project Number를 입력한다.
+				"ecb" : "onNotificationGCM"	// 디바이스로 푸시가 오면 onNotificationGCM 함수를 실행할 수 있도록 ecb(event callback)에 등록한다.
+			});
+		}else{
+			// PushPlugin을 설치했다면 window.plugins.pushNotification.register를 이용해서 iOS 푸시 서비스를 등록한다.
+			window.plugins.pushNotification.register(function(result){
+				console.log("deviceToken:" + result);
+			}, function(err){
+				console.log("error:" + err);
+			}, {
+				"badge":"true", // 뱃지 기능을 사용한다.
+				"sound":"true", // 사운드를 사용한다.
+				"alert":"true", // alert를 사용한다.
+				"ecb": "onNotificationAPN" // 디바이스로 푸시가 오면 onNotificationAPN 함수를 실행할 수 있도록 ecb(event callback)에 등록한다.
+			});
 		}
-	}, false);
-	document.addEventListener("backbutton", function (e){
-        e.preventDefault();
-    }, false);
-})();
-
-// -------------------------
+	}
+	
+	angular.bootstrap(document, ['kcp']);
+}, false);
 
 var module = angular.module("kcp", ["angularjs-datetime-picker"])
+.run(function($http){
+	// 사용자 등록
+	$http({
+		url: KCP.domain+"/carpoolboard/insertUser.do",
+		method: "post",
+		params: {
+			"userId": KCP.deviceid
+		}
+	})
+	.success(function(data, status){
+	});
+})
 .service("UtilService", function(){
 
 	// 10미만 정수를 받아 2자리 수로 변환하여 반환한다.
@@ -208,6 +195,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 		var deferred = $q.defer();
 		$http({
 			url: url,
+			method: "post",
 			params: data
 		})
 		.success(function(data, status){
@@ -227,7 +215,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// pgn: pgination
 	this.selectCarpoolList = function(pgn){
 		return ajax(
-			"http://localhost:8080/KumohCarPool/carpoolboard/getList.do", {
+			KCP.domain+"/carpoolboard/getList.do", {
 				"pageIndex": pgn,
 				"pageNumber": 3
 			}
@@ -238,7 +226,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// boardid: 카풀 게시글 ID
 	this.selectCarpoolDetail = function(boardid){
 		return ajax(
-			"http://localhost:8080/KumohCarPool/carpoolboard/getBoard.do", {
+			KCP.domain+"/carpoolboard/getBoard.do", {
 				"cpBoardId": boardid,
 				"userId": KCP.deviceid
 			}
@@ -250,7 +238,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	this.insertCarpool = function(data){
 		data.userId = KCP.deviceid;
 		return ajax(
-			"http://localhost:8080/KumohCarPool/carpoolboard/insertBoard.do",
+			KCP.domain+"/carpoolboard/insertBoard.do",
 			data
 		);
 	}
@@ -259,7 +247,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	this.updateCarpool = function(data){
 		data.userId = KCP.deviceid;
 		return ajax(
-			"http://localhost:8080/KumohCarPool/carpoolboard/updateBoard.do",
+			KCP.domain+"/carpoolboard/updateBoard.do",
 			data
 		);
 	}
@@ -268,7 +256,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// boardid: 카풀 게시글 ID
 	this.deleteCarpool = function(boardid){
 		return ajax(
-			"http://localhost:8080/KumohCarPool/carpoolboard/deleteBoard.do", {
+			KCP.domain+"/carpoolboard/deleteBoard.do", {
 				"cpBoardId": boardid,
 				"userId": KCP.deviceid
 			}
@@ -278,7 +266,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// 내 카풀 목록
 	this.selectMyCarpoolList = function(){
 		return ajax(
-			"http://localhost:8080/KumohCarPool/carpoolboard/getMyList.do", {
+			KCP.domain+"/carpoolboard/getMyList.do", {
 				"userId": KCP.deviceid
 			}
 		);
@@ -288,7 +276,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// boardid: 카풀 게시글 ID
 	this.attendCarpool = function(boardid){
 		return ajax(
-			"http://localhost:8080/KumohCarPool/carpoolboard/attend.do", {
+			KCP.domain+"/carpoolboard/attend.do", {
 				"cpBoardId": boardid,
 				"userId": KCP.deviceid
 			}
@@ -299,7 +287,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// boardid: 카풀 게시글 ID
 	this.cancelCarpool = function(boardid){
 		return ajax(
-			"http://localhost:8080/KumohCarPool/carpoolboard/cancel.do", {
+			KCP.domain+"/carpoolboard/cancel.do", {
 				"cpBoardId": boardid,
 				"userId": KCP.deviceid
 			}
@@ -311,7 +299,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// contents: 덧글 내용
 	this.insertComment = function(boardid, contents){
 		return ajax(
-			"http://localhost:8080/KumohCarPool/carpoolboard/addComment.do", {
+			KCP.domain+"/carpoolboard/addComment.do", {
 				"cpBoardId": boardid,
 				"comment": contents,
 				"userId": KCP.deviceid
@@ -322,7 +310,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// 목적지 정보
 	this.selectDest = function(boardid, contents){
 		return ajax(
-			"http://localhost:8080/KumohCarPool/destination/select.do", {
+			KCP.domain+"/destination/select.do", {
 				"userId": KCP.deviceid
 			}
 		);
@@ -334,7 +322,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// time: 카풀 시간
 	this.insertDest = function(start,arrive,time){
 		return ajax(
-			"http://localhost:8080/KumohCarPool/destination/add.do", {
+			KCP.domain+"/destination/add.do", {
 				"startPoint": start,
 				"arrivePoint": arrive,
 				"carpoolTime": time,
@@ -346,7 +334,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// 목적지 정보 삭제
 	this.deleteDest = function(){
 		return ajax(
-			"http://localhost:8080/KumohCarPool/destination/delete.do", {
+			KCP.domain+"/destination/delete.do", {
 				"userId": KCP.deviceid
 			}
 		);
@@ -355,7 +343,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// 메시지 목록
 	this.selectMessageList = function(){
 		return ajax(
-			"http://localhost:8080/KumohCarPool/message/getMessage.do", {
+			KCP.domain+"/message/getMessage.do", {
 				"userId": KCP.deviceid
 			}
 		);
@@ -364,7 +352,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// 매칭 정보
 	this.selectMessageList = function(){
 		return ajax(
-			"http://localhost:8080/KumohCarPool/destination/match.do", {
+			KCP.domain+"/destination/match.do", {
 				"userId": KCP.deviceid
 			}
 		);
