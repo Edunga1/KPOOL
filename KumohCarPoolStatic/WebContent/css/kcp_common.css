@@ -153,6 +153,13 @@ input[type=text], input[type=number], select {
 .x3 {
 	font-size: 3rem;
 }
+/* line-height x */
+.lhx25 {
+	line-height: 2.5rem;
+}
+.lhx5 {
+	line-height: 5rem;
+}
 .b {
 	font-weight: bold;
 }
@@ -215,7 +222,7 @@ input[type=text], input[type=number], select {
 	top: 0.5em;
 	height: 0px;
 	width: 75%;
-	left: 15%;
+	left: 12.5%;
 	border-bottom: solid 1px #b7b8b9;
 }
 .
@@ -474,18 +481,6 @@ input[type=text], input[type=number], select {
 	margin: 20px auto;
 	padding: 10px;
 	width: 85%;
-}
-.box_txt_summary {
-	height: 30px;
-	line-height: 30px;
-}
-.box_desc_summary {
-	height: 30px;
-	line-height: 30px;
-	font-size: 1.5rem;
-}
-.box_time_summary {
-	line-height: 60px;
 }
 .list_cmt>li {
 	margin-bottom: 5px;

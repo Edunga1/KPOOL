@@ -142,6 +142,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 		var time = new Date(arr.carpoolTime);
 		arr.formattedTime = this.addZero(time.getHours()) + ":" + this.addZero(time.getMinutes());
 		arr.formattedDay = time.getMonth()+1 + "/" + time.getDate();
+		arr.formattedFullDay = time.getFullYear() + " " + arr.formattedDay;
 		return arr;
 	}
 })
@@ -384,15 +385,20 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	$scope.loadmore = function(){
 		AjaxService.selectCarpoolList(pgn).then(
 			function(response){
-				pgn += response.lists.length;
-				if($scope.isMypool){
-					$scope.isMypool = false;
-					$scope.models.carpools = [];
+				if(response.lists.length > 0){
+					pgn += response.lists.length;
+					if($scope.isMypool){
+						$scope.isMypool = false;
+						$scope.models.carpools = [];
+					}
+					for(var i in response.lists){
+						UtilService.carpoolDataProc(response.lists[i]);
+					}
+					$scope.models.carpools.push.apply($scope.models.carpools, response.lists);
+					if($scope.models.carpools.length == response.lists.length){
+						$scope.currentDate = $scope.models.carpools[0].formattedFullDay;
+					}
 				}
-				for(var i in response.lists){
-					UtilService.carpoolDataProc(response.lists[i]);
-				}
-				$scope.models.carpools.push.apply($scope.models.carpools, response.lists);
 			}
 		);
 	}
@@ -715,8 +721,19 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 .directive("listscroll", function($document){
 	return {
 		link: function(scope, element, attrs){
+			var callback = function(){
+				var timebars = element[0].getElementsByClassName("timebar");
+				var prev = timebars[0];
+				for(var i=1; i<timebars.length; i++){
+					if(timebars[i].offsetTop > element[0].scrollTop)
+						break;
+					prev = timebars[i];
+				}
+				scope.currentDate = prev.dataset.date;
+			}
 			element.bind("scroll", function(){
-				console.log(element[0].scrollTop);
+				callback();
+				scope.$apply();
 			});
 		}
 	}

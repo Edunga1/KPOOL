@@ -13,7 +13,7 @@
 <header>
 </header>
 <nav class="gnb bgp shdw3">
-	<div class="fgw vhc b">2015 6/26</div>
+	<div class="fgw vhc b">{{currentDate}}</div>
 	<div class="btn_menu c" ng-click="menu = !menu">
 		<i class="ico_menu vhc fgw"></i>
 	</div>
@@ -76,23 +76,25 @@
 </nav>
 <!-- 카풀 목록 부분 -->
 <article class="cont_board">
-	<div class="cont_board_scroll" ng-init="loadmore()" listscroll>
+	<div id="cplist" class="cont_board_scroll" ng-init="loadmore()" listscroll>
 		<div class="btn_back bg2 fgw c shdw2" ng-show="isMypool" ng-click="loadmore()">
 			전체 카풀
 		</div>
 		<div id="carpoolmap" ng-show="cidx >= 0" map></div>
-		<div class="row" ng-repeat-start="c in models.carpools" ng-show="models.carpools[$index-1].formattedDay != c.formattedDay">
-			<div class="col_4 line_hr"></div>
-			<div class="col_2">{{c.formattedDay}}</div>
-			<div class="col_4 line_hr"></div>
+		<div class="timebar" ng-repeat-start="c in models.carpools" data-date="{{c.formattedFullDay}}" ng-show="models.carpools[$index-1].formattedDay != c.formattedDay">
+			<div class="row">
+				<div class="col_4 line_hr"></div>
+				<div class="col_2 c">{{c.formattedDay}}</div>
+				<div class="col_4 line_hr"></div>
+			</div>
 		</div>
 		<div class="box_carpool bgw shdw2" ng-repeat-end>
 			<div class="row" ng-click="toggleDetail($index);readmore($event,$index)">
-				<div class="col_4 c fgp x3 box_time_summary b">
+				<div class="col_4 c fgp x3 b lhx5">
 					{{c.formattedTime}}
 				</div>
 				<div class="col_6">
-					<div class="row box_txt_summary">
+					<div class="row lhx25">
 						<div class="col_5 c fgp x1">
 							FROM
 						</div>
@@ -100,7 +102,7 @@
 							TO
 						</div>
 					</div>
-					<div class="row box_desc_summary">
+					<div class="row lhx25">
 						<div class="col_5 c">
 							{{c.startPoint}}
 						</div>
