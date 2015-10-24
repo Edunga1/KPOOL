@@ -17,9 +17,10 @@ import kcp.sample.dao.DestinationDAO;
 import kcp.sample.dao.MessageDAO;
 import kcp.sample.dao.UserDAO;
 import kcp.sample.service.AliasAddingService;
-import kcp.sample.service.CarPoolBoardExceptionHadler;
+import kcp.sample.service.DataExceptionHandler;
 import kcp.sample.service.DestinationMatchingService;
 import kcp.sample.service.MessagePushService;
+import kcp.sample.vo.Attendant;
 import kcp.sample.vo.CarpoolBoard;
 import kcp.sample.vo.Comment;
 import kcp.sample.vo.Destination;
@@ -144,8 +145,33 @@ public class CarPoolBoardController {
 	@RequestMapping(value = "/carpoolboard/getList.do")
 	public ModelAndView selectBoardList(CommandMap commandMap) throws Exception {
 		ModelAndView mv = new ModelAndView();
-		List<CarpoolBoard> list = carpoolBoardDao.selectBoardList(commandMap.getMap());
-		mv.addObject("lists", list);
+		List<CarpoolBoard> boardList = carpoolBoardDao.selectBoardList(commandMap.getMap());
+		
+		/*
+			   boardList <- 전체 목록
+			   attendantList <- 참여 목록 
+			   작성자 인지 확인안함?
+			   필요한건? 참여여부 
+			   클라이언트에서 계산을 해줘야하나?
+			   
+			   userId를 클라이언트로 부터 받는다. 
+			   CarpoolBoard에 isMine 이라는 속성을 추가한다. 
+			   String userId = commandMap.getMap().get("userId");
+			   
+			   for ( CarpoolBoard board : boardList ) 
+			   {
+			   	  for ( Attendant attendant : attendantList )
+			   	  	  // 작성자라면 ( 게시글 작성자id == 사용자 id ) 
+			   	   	  if ( board.getUserId() == userId )
+			   	   	   			board.setMine(true);
+			   	   	  // 참여자라면 ( 게시글 보드id == 참여자 보드id == 사용자 id )  
+			   	   	  else if(  
+			   }  
+		 */
+		
+//		mv.addObject("boardlists", boardList );
+//		mv.addObject("attendantList", attendantList );
+		mv.addObject("lists",boardList);
 		mv.setViewName("jsonView");
 		return mv;
 	}
@@ -231,14 +257,17 @@ public class CarPoolBoardController {
 	public ModelAndView insertBoard(CommandMap commandMap) throws Exception {
 		ModelAndView mv = new ModelAndView();
 		// 클라이언트로 받은 게시글에 대한 유효성 검사
-		boolean res = CarPoolBoardExceptionHadler.checkDataValidation(commandMap.getMap()); 
+		boolean res = DataExceptionHandler.isBoardDataValidate(commandMap.getMap()); 
 		// 데이터가 비지 않거나, 카풀 날짜가 현재 보다 미래이면 
 		if(res)
 			{
 				// 게시글을 등록한다. 
 				carpoolBoardDao.insertBoard(commandMap.getMap());
 				commandMap.put("boardId", commandMap.get("cpBoardId"));
+				
 				// 게시글의 메모창의 내용이 첫 번째 댓글로 추가된다. 
+				if(commandMap.getMap().get("comment")!="" ||
+						!commandMap.getMap().get("comment").equals("") )
 				carpoolBoardDao.insertComment(commandMap.getMap());	
 				
 				// 각 메소드에 여러 매개변수를 맵개체에 담아서 넘긴다.
@@ -298,7 +327,7 @@ public class CarPoolBoardController {
 	@RequestMapping(value = "/carpoolboard/updateBoard.do")
 	public ModelAndView updateBoard(CommandMap commandMap) throws Exception {
 		ModelAndView mv = new ModelAndView();
-		boolean res = CarPoolBoardExceptionHadler.checkDataValidation(commandMap.getMap()); 
+		boolean res = DataExceptionHandler.isBoardDataValidate(commandMap.getMap()); 
 		// 데이터가 비지 않거나, 카풀 날짜가 현재 보다 미래이면 
 		if(res)
 			{
@@ -466,10 +495,13 @@ public class CarPoolBoardController {
 	@RequestMapping(value = "/carpoolboard/addComment.do")
 	public ModelAndView addComment(CommandMap commandMap) throws Exception {
 		ModelAndView mv = new ModelAndView();
-		carpoolBoardDao.insertComment(commandMap.getMap());
-		List<Comment> commentList = carpoolBoardDao.selectCommentList(commandMap.getMap());
-
-		mv.addObject("commentList", commentList);
+		boolean res = DataExceptionHandler.isCommentDataValidate(commandMap.getMap());
+		if(res)
+		{
+			carpoolBoardDao.insertComment(commandMap.getMap());
+			List<Comment> commentList = carpoolBoardDao.selectCommentList(commandMap.getMap());
+			mv.addObject("commentList", commentList);
+		}
 		mv.setViewName("jsonView");
 		return mv;
 	}

@@ -17,6 +17,7 @@
 		<result column="contents" property="contents" />
 		<result column="commentNums" property="commentNums" />
 		<result column="serialNumber" property="serialNumber"/>
+		<result column="isAttend" property="isAttend" javaType="boolean" />
 	</resultMap>
 
 	<!-- 카풀 참여 entity -->
@@ -42,26 +43,42 @@
 
 	<!-- 전체 카풀 목록 로드 -->
 	<select id="selectBoardList" parameterType="map" resultMap="carpoolboardResultMap">
-		<![CDATA[
+<!-- 		<![CDATA[
 SELECT * FROM Carpoolboard WHERE
 				TIMESTAMP(Now()) < carpoolTime ORDER BY carpoolTime ASC LIMIT #{pageIndex}, #{pageNumber}
-		]]>
+		]]> -->
+	<![CDATA[
+			SELECT
+				*,
+				(CASE
+		    	   WHEN att.userId = 'b' or cp.writer = 'b'
+			 	   THEN 1 
+			       ELSE 0 
+				 END ) as isAttend
+			FROM Carpoolboard as cp 
+			LEFT JOIN
+				Attendant AS att 
+			ON
+				cp.cpBoardId = att.cpBoardId 
+			WHERE
+				TIMESTAMP(Now()) < carpoolTime ORDER BY carpoolTime ASC Limit #{pageIndex}, #{pageNumber}
+	]]>		
 	</select>
 
 	<!-- 사용자가 등록하거나 참석한거만 가져온다. -->
 	<select id="selectMyList" parameterType="map" resultMap="carpoolboardResultMap">
 	<![CDATA[
-SELECT
-		*
-	FROM Carpoolboard as cp 
-	LEFT JOIN
-		Attendant AS att 
-	ON
-		cp.cpBoardId = att.cpBoardId 
-	WHERE
-		att.userId = #{userId}
-		OR cp.writer = #{userId}
-		and Timestamp(NOW() - INTERVAL 1 DAY) < carpoolTime 
+		SELECT
+				*
+			FROM Carpoolboard as cp 
+			LEFT JOIN
+				Attendant AS att 
+			ON
+				cp.cpBoardId = att.cpBoardId 
+			WHERE
+				att.userId = #{userId}
+				OR cp.writer = #{userId}
+				and Timestamp(NOW() - INTERVAL 1 DAY) < carpoolTime 
 	]]>
 	</select><!--attendant cpBoardId 바꿔야할수도잇 -->
 
@@ -135,6 +152,14 @@ SELECT
 		WHERE
 			cpBoardId = #{cpBoardId}
 	</update>
+	
+	<!-- 카풀 참여자 목록 조회 -->
+	<select id="selectAttendant" resultMap="attendantResultMap">
+		SELECT
+			*
+		FROM
+			Attendant
+	</select>
 
 	<!-- 카풀 참여하기 -->
 	<insert id="insertAttendant" parameterType="map">
@@ -154,7 +179,7 @@ SELECT
 		WHERE
 			userId = #{userId}
 	</delete>
-
+	
 	<!-- 참여자 한명 로드하기 -->
 	<select id="selectOneAttendant" parameterType="map" resultType="map">
 		SELECT

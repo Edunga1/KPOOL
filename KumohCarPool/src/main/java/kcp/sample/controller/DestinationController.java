@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import kcp.common.common.CommandMap;
 import kcp.sample.dao.DestinationDAO;
-import kcp.sample.service.CarPoolBoardExceptionHadler;
+import kcp.sample.service.DataExceptionHandler;
 import kcp.sample.service.DestinationMatchingService;
 import kcp.sample.vo.Destination;
 
@@ -104,7 +104,7 @@ public class DestinationController {
 	@RequestMapping(value = "/destination/add.do")
 	public ModelAndView insertMatchDestination(CommandMap commandMap) throws Exception {
 		ModelAndView mv = new ModelAndView();
-		boolean res = CarPoolBoardExceptionHadler.checkDataValidation(commandMap.getMap());
+		boolean res = DataExceptionHandler.isDestinationDataValidate(commandMap.getMap());
 		// 데이터가 비지 않거나, 카풀 날짜가 현재 보다 미래이면 
 		if(res)
 			{

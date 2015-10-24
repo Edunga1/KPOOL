@@ -17,6 +17,7 @@ public class CarpoolBoard {
 	private String contents;
 	private int commentNums;
 	private String serialNumber;
+	private boolean isAttend;
 	
 	public int getCpBoardId() {
 		return cpBoardId;
@@ -96,6 +97,12 @@ public class CarpoolBoard {
 	}
 	public void setSerialNumber(String serialNumber) {
 		this.serialNumber = serialNumber;
+	}
+	public boolean isAttend() {
+		return isAttend;
+	}
+	public void setAttend(boolean isAttend) {
+		this.isAttend = isAttend;
 	}
 	
 }

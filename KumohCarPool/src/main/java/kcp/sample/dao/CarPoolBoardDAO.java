@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 import kcp.common.dao.AbstractDAO;
+import kcp.sample.vo.Attendant;
 import kcp.sample.vo.CarpoolBoard;
 import kcp.sample.vo.Comment;
 
@@ -14,7 +15,7 @@ public class CarPoolBoardDAO extends AbstractDAO{
 
 	
 	/**
-	 * 게시글 전체 목록 조회  
+	 * 게시글 목록 조회  
 	 * @param  map [pageIndex, pageNumber]
 	 * @return List<게시글 목록> 
 	 * @throws Exception
@@ -90,6 +91,17 @@ public class CarPoolBoardDAO extends AbstractDAO{
 	 */
 	public void updateCurrentPeopleCount(Map<String, Object> map) throws Exception{
 		update("carpoolboard.updatePersonNumber",map);
+	}
+	
+	/**
+	 * 카풀 참여 목록 조회 
+	 * @param map
+	 * @return List<카풀참여>
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Attendant> selectAttendantList(Map<String,Object> map) throws Exception{
+		return (List<Attendant>)selectList("carpoolboard.selectAttendant");
 	}
 	
 	/**
