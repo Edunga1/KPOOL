@@ -157,6 +157,49 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 		return arr;
 	}
 })
+.service("MapService", function($rootScope, $q){
+
+	// 좌표 변환
+	var geocoder = new daum.maps.services.Geocoder();
+	// 지도 정보
+	this.map = {};
+	
+	// 지도 초기화
+	this.init = function(element, lat, lng){
+		if(typeof daum != "undefined"){
+			var startPoint = new daum.maps.LatLng(lat, lng);
+			var mapOption = {
+					center: startPoint,
+					draggable: false,
+					level: 3
+			}
+			this.map.map = new daum.maps.Map(element, mapOption);
+			this.map.marker = new daum.maps.Marker({
+				position: startPoint
+			});
+			this.map.marker.setMap(this.map.map);
+			this.map.marker.setDraggable(true);
+		}
+	};
+	
+	// marker 이동
+	this.moveMarker = function(lat, lng){
+		var pos = new daum.maps.LatLng(lat, lng);
+		this.map.map.setCenter(pos);
+		this.map.marker.setPosition(pos);
+	}
+	
+	// 좌표 -> 주소 변환
+	// daum map api service
+	// return deferred
+	this.coord2addr = function(lat, lng){
+		var deferred = $q.defer();
+		geocoder.coord2addr(new daum.maps.LatLng(lat,lng), function(status, result){
+			deferred.resolve(result);
+		});
+		return deferred.promise;
+	}
+})
 .service("AjaxService", function($http, $q){
 	
 	// 비동기 통신 defer
@@ -206,7 +249,6 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// data: 카풀 정보, 데이터
 	this.insertCarpool = function(data){
 		data.userId = KCP.deviceid;
-		console.log(data);
 		return ajax(
 			"http://localhost:8080/KumohCarPool/carpoolboard/insertBoard.do",
 			data
@@ -578,7 +620,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 		
 		AjaxService.insertCarpool($scope.formData).then(
 			function(response){
-				console.log("#");
+				$scope.goToList();
 			}
 		);
 	}
@@ -655,56 +697,11 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	else if(typeof $scope.queryString.carpoolTime != "undefined"){
 		angular.extend($scope.formData, $scope.queryString);
 	}
-});
-
-// map module
-module.service("MapService", function($rootScope, $q){
-
-	// 좌표 변환
-	var geocoder = new daum.maps.services.Geocoder();
-	// 지도 정보
-	this.map = {};
-	
-	// 지도 초기화
-	this.init = function(element, lat, lng){
-		if(typeof daum != "undefined"){
-			var startPoint = new daum.maps.LatLng(lat, lng);
-			var mapOption = {
-					center: startPoint,
-					draggable: false,
-					level: 3
-			}
-			this.map.map = new daum.maps.Map(element, mapOption);
-			this.map.marker = new daum.maps.Marker({
-				position: startPoint
-			});
-			this.map.marker.setMap(this.map.map);
-			this.map.marker.setDraggable(true);
-		}
-	};
-	
-	// marker 이동
-	this.moveMarker = function(lat, lng){
-		var pos = new daum.maps.LatLng(lat, lng);
-		this.map.map.setCenter(pos);
-		this.map.marker.setPosition(pos);
-	}
-	
-	// 좌표 -> 주소 변환
-	// daum map api service
-	// return deferred
-	this.coord2addr = function(lat, lng){
-		var deferred = $q.defer();
-		geocoder.coord2addr(new daum.maps.LatLng(lat,lng), function(status, result){
-			deferred.resolve(result);
-		});
-		return deferred.promise;
-	}
 })
 .directive("map", function($compile, MapService){
 	return {
 		link: function(scope, element, attrs){
-			MapService.init(element[0], 130.1123, 150);
+			MapService.init(element[0], 36.1425305, 128.394327);
 		}
 	}
 })
