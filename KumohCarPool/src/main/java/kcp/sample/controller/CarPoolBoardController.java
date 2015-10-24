@@ -235,6 +235,7 @@ public class CarPoolBoardController {
 		// 데이터가 비지 않거나, 카풀 날짜가 현재 보다 미래이면 
 		if(res)
 			{
+				// 게시글을 등록한다. 
 				carpoolBoardDao.insertBoard(commandMap.getMap());
 				commandMap.put("boardId", commandMap.get("cpBoardId"));
 				// 게시글의 메모창의 내용이 첫 번째 댓글로 추가된다. 

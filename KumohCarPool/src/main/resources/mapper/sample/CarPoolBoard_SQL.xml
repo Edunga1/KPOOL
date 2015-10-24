@@ -53,9 +53,9 @@ SELECT * FROM Carpoolboard WHERE
 	<![CDATA[
 SELECT
 		*
-	FROM CarpoolBoard as cp 
+	FROM Carpoolboard as cp 
 	LEFT JOIN
-		attendant AS att 
+		Attendant AS att 
 	ON
 		cp.cpBoardId = att.cpBoardId 
 	WHERE
@@ -93,7 +93,7 @@ SELECT
 		keyProperty="cpBoardId">
 		INSERT
 		INTO
-			CarpoolBoard
+			Carpoolboard
 			(writer,startPoint,arrivePoint,startLatitude,startLongitude,carType,numberOfPersons,carpoolTime,contents)
 		VALUES
 			(#{userId},#{startPoint},#{arrivePoint},#{startLatitude},#{startLongitude},#{carType},#{numberOfPersons},#{carpoolTime},#{contents})
@@ -129,7 +129,7 @@ SELECT
 	<!-- 현재 인원 업데이트 -->
 	<update id="updatePersonNumber" parameterType="map">
 		UPDATE
-			CarpoolBoard
+			Carpoolboard
 		SET
 			currentPersons = #{currentPersons}
 		WHERE
