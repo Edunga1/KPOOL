@@ -24,6 +24,7 @@ document.addEventListener("deviceready", function(){
 	// 푸쉬 Receive / Regist Callback function - ANDROID
 	// onNotification***은 반드시 window의 멤버함수로 존재해야 함
 	window.onNotificationGCM = function(e){
+		alert("onNotificationGCM: " + e.regid);
 		switch(e.event){
 			// 안드로이드 디바이스의 registerID를 획득하는 event 중 registerd 일 경우 호출된다.
 			case 'registered':
