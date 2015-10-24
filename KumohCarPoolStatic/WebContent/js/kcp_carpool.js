@@ -8,7 +8,7 @@
 
 // 카풀 서버와 디바이스 정보
 var KCP = {
-	domain:				"http://192.168.219.124:8080/KumohCarPool",	// 서버 URL
+	domain:				"http://192.168.1.7:8080/KumohCarPool",	// 서버 URL
 	deviceid:			"a",									// device id
 	regid:				null,									// google gcm regid
 };
@@ -141,6 +141,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	this.carpoolDataProc = function(arr){
 		var time = new Date(arr.carpoolTime);
 		arr.formattedTime = this.addZero(time.getHours()) + ":" + this.addZero(time.getMinutes());
+		arr.formattedDay = time.getMonth()+1 + "/" + time.getDate();
 		return arr;
 	}
 })
@@ -351,7 +352,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	}
 	
 	// 매칭 정보
-	this.selectMessageList = function(){
+	this.selectMatching = function(){
 		return ajax(
 			KCP.domain+"/destination/match.do", {
 				"userId": KCP.deviceid
@@ -523,7 +524,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	
 	// 매칭 정보 로드
 	$scope.selectMatchingResult = function(){
-		AjaxService.selectMessageList().then(
+		AjaxService.selectMatching().then(
 			function(response){
 				angular.extend($scope.models.matching, response);
 			}
@@ -708,6 +709,15 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 				MapService.map.map.relayout();
 				MapService.map.marker.setPosition(MapService.map.map.getCenter());
 			}
+		}
+	}
+})
+.directive("listscroll", function($document){
+	return {
+		link: function(scope, element, attrs){
+			element.bind("scroll", function(){
+				console.log(element[0].scrollTop);
+			});
 		}
 	}
 });

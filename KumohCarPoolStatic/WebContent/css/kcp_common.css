@@ -29,6 +29,10 @@ html, body, div, span, ul, li {
     background:transparent;
 }
 
+html, body {
+	height: 100%;
+}
+
 body {
     line-height:1;
 	background-color: #f8f8f8;
@@ -73,20 +77,19 @@ input[type=text], input[type=number], select {
 }
 /* html5 reset end */
 
-/* global style start */
 /* body */
 .body_serv2 {
 	padding-bottom: 50%;
 	background-color: #f8726e;
 }
-.ico {
-	color: #ff7e79;
+.none {
+	display: none;
 }
+/* positioning */
 .before {
 	position: absolute;
 	margin: 5px auto auto -8px;
 }
-/* positioning */
 .vhc {
 	top: 50%;
 	left: 50%;
@@ -110,10 +113,10 @@ input[type=text], input[type=number], select {
 .shdw3 {
 	box-shadow: 0 0px 6px rgba(0,0,0,.5);
 }
-.none {
-	display: none;
-}
 /* styling */
+.ico {
+	color: #ff7e79;
+}
 .flat {
 	border: 1px solid #dcdee0;
 }
@@ -162,11 +165,6 @@ input[type=text], input[type=number], select {
 .fg2 {
 	color: #878b89;
 }
-/*.fgw {
-	color: #f97d79;
-}
-구버전 색상
-*/
 .bgw {
 	background-color: #fff;
 }
@@ -210,29 +208,17 @@ input[type=text], input[type=number], select {
 	background-color: transparent;
 	box-shadow: none;
 }
-/* lines */
-.timeline_vc:before {
+.line_hr:before {
+	content: "";
 	position: absolute;
 	z-index: -1;
-	top: 0px;
-	height: 100%;
-	width: 4px;
-	background-color: #b7b8b9;
-	content: "";
+	top: 0.5em;
+	height: 0px;
+	width: 75%;
+	left: 15%;
+	border-bottom: solid 1px #b7b8b9;
 }
-.timeline_hr:before {
-	position: absolute;
-	z-index: -1;
-	right: 0;
-	height: 4px;
-	width: 100%;
-	background-color: #b7b8b9;
-	content: "";
-}
-.line_hr {
-	background-color: #ff7e79;
-	height: 4px;
-}
+.
 /* grid */
 .row {
 }
@@ -318,7 +304,7 @@ input[type=text], input[type=number], select {
 .col_10 {
 	width: 100%;
 }
-/* modal */
+/* modal module start */
 .overlay {
 	position: fixed;
 	z-index: 1000;
@@ -401,14 +387,11 @@ input[type=text], input[type=number], select {
 	padding: 10px 10px 5px 10px;
 	text-align: right;
 }
-/* global style end */
+/* modal module end */
 
 /* gnb start */
 .gnb {
-	position: fixed;
-	z-index: 3;
-	top: 0;
-	width: 100%;
+	position: relative;
 	height: 9%;
 }
 .gnb .btn_menu {
@@ -420,9 +403,6 @@ input[type=text], input[type=number], select {
 .time_gnb {
 	font-size: 2rem;
 }
-/* gnb end */
-
-/* snb start */
 .snb {
 	position: fixed;
 	top: 0;
@@ -461,17 +441,14 @@ input[type=text], input[type=number], select {
 .snb .box_alias {
 	width: 100%;
 }
-/* snb end */
-
-/* carpool list start */
 .cont_board {
-	margin-top: 20%;
-	height: 100%;
+	height: 91%;
+	overflow: hidden;
 }
-#carpoolmap {
-	position: relative;
-	width: 100%;
-	height: 300px;
+.cont_board_scroll {
+	padding: 10% 0;
+	height: 100%;
+	overflow: scroll;
 }
 .detail {
 	padding-top: 20px;
@@ -523,9 +500,6 @@ input[type=text], input[type=number], select {
 	border-radius: 5px;
 	word-break: break-all;
 }
-/* carpool list end */
-
-/* carpool add page start */
 .cont_forms {
 	margin: 10% auto auto auto;
 	padding: 8%;
@@ -537,9 +511,6 @@ input[type=text], input[type=number], select {
 	width: 86%;
 	text-align: right;
 }
-/* carpool add page end */
-
-/* modals start */
 #modalMap {
 	width: 80%;
 }
@@ -566,4 +537,8 @@ input[type=text], input[type=number], select {
 	padding: 15px 0;
 	border-bottom: 3px solid #eee;
 }
-/* modals end */
+#carpoolmap {
+	position: relative;
+	width: 100%;
+	height: 300px;
+}

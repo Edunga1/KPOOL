@@ -13,7 +13,7 @@
 <header>
 </header>
 <nav class="gnb bgp shdw3">
-	<div class="time_gnb fgw vhc b">2015 6/26</div>
+	<div class="fgw vhc b">2015 6/26</div>
 	<div class="btn_menu c" ng-click="menu = !menu">
 		<i class="ico_menu vhc fgw"></i>
 	</div>
@@ -76,13 +76,15 @@
 </nav>
 <!-- 카풀 목록 부분 -->
 <article class="cont_board">
-	<div id="listCarpool" ng-init="loadmore()">
+	<div class="cont_board_scroll" ng-init="loadmore()" listscroll>
 		<div class="btn_back bg2 fgw c shdw2" ng-show="isMypool" ng-click="loadmore()">
 			전체 카풀
 		</div>
 		<div id="carpoolmap" ng-show="cidx >= 0" map></div>
-		<div ng-repeat-start="c in models.carpools">
-			{{c.formattedTime}}
+		<div class="row" ng-repeat-start="c in models.carpools" ng-show="models.carpools[$index-1].formattedDay != c.formattedDay">
+			<div class="col_4 line_hr"></div>
+			<div class="col_2">{{c.formattedDay}}</div>
+			<div class="col_4 line_hr"></div>
 		</div>
 		<div class="box_carpool bgw shdw2" ng-repeat-end>
 			<div class="row" ng-click="toggleDetail($index);readmore($event,$index)">
