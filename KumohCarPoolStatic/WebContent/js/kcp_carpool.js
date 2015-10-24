@@ -9,7 +9,7 @@
 // 카풀 서버와 디바이스 정보
 var KCP = {
 	domain:				"http://192.168.219.124:8080/KumohCarPool",	// 서버 URL
-	deviceid:			null,									// device id
+	deviceid:			"a",									// device id
 	regid:				null,									// google gcm regid
 };
 
@@ -19,7 +19,7 @@ document.addEventListener("backbutton", function (e){
 }, false);
 
 // device 정보 획득 후 angularjs 부트스트랩
-document.addEventListener("deviceready", function(){
+document.addEventListener("DOMContentLoaded", function(){
 
 	// 푸쉬 Receive / Regist Callback function - ANDROID
 	// onNotification***은 반드시 window의 멤버함수로 존재해야 함
@@ -579,7 +579,8 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 		carType: "",
 		carpoolTime: "",
 		startLatitude: "",
-		startLongitude: ""
+		startLongitude: "",
+		comment: ""
 	};
 	// 수정모드 여부
 	$scope.isModifyMode = false;
@@ -601,6 +602,8 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// 카풀 등록
 	$scope.addCarpool = function(){
 		for(var key in $scope.formData){
+			if(key == "comment")
+				continue;
 			if($scope.formData[key] != null && $scope.formData[key].length == 0){
 				alert("필수 항목이 비어있습니다!");
 				return false;
@@ -617,6 +620,8 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// 카풀 수정
 	$scope.modifyCarpool = function(){
 		for(var key in $scope.formData){
+			if(key == "comment")
+				continue;
 			if($scope.formData[key] != null && $scope.formData[key].length == 0){
 				alert("필수 항목이 비어있습니다!");
 				return false;

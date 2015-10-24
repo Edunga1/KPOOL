@@ -81,7 +81,10 @@
 			전체 카풀
 		</div>
 		<div id="carpoolmap" ng-show="cidx >= 0" map></div>
-		<div class="box_carpool bgw shdw2" ng-repeat="c in models.carpools">
+		<div ng-repeat-start="c in models.carpools">
+			{{c.formattedTime}}
+		</div>
+		<div class="box_carpool bgw shdw2" ng-repeat-end>
 			<div class="row" ng-click="toggleDetail($index);readmore($event,$index)">
 				<div class="col_4 c fgp x3 box_time_summary b">
 					{{c.formattedTime}}
@@ -222,7 +225,7 @@
 		</div>
 		<div class="wrap_footer">
 			<input class="btn btn_blank fgp" type="button" value="삭제" ng-show="models.dest.isExist" ng-click="deleteDest()">
-			<input class="btn btn_blank fgp" type="button" value="설정" ng-click="saveDest()">
+			<input class="btn btn_blank fgp" type="button" value="설정" ng-click="saveDest(); modal = ''">
 		</div>
 	</div>
 	<!-- 매칭 -->
