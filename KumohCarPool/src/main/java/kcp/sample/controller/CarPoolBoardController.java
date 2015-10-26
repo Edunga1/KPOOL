@@ -116,6 +116,7 @@ public class CarPoolBoardController {
 			AliasAddingService aliasAddingService = new AliasAddingService();
 			aliasAddingService.setUserAlias(commandMap.getMap());
 			userDao.insertUser(commandMap.getMap());
+			user = userDao.selectUser(commandMap.getMap());
 		}
 		mv.addObject("user",user);
 		mv.setViewName("jsonView");
