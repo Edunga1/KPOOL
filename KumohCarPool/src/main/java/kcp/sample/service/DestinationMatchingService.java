@@ -44,7 +44,6 @@ public class DestinationMatchingService {
 
 		// 매칭 결과 메시지 리턴
 		if (matchingCount == 0) {
-//			return "현재 매칭되는 사람이 없습니다.";
 			message = "현재 매칭되는 사람이 없습니다.";
 		} else {
 			isMatching = true; 
@@ -81,7 +80,6 @@ public class DestinationMatchingService {
 		// map안에 있는 속성으로 초기화 한다.
 		String startPoint = (String) board.get("startPoint");
 		String arrivePoint = (String) board.get("arrivePoint");
-//		Timestamp carpoolTime = new Timestamp(new Date(board.get("carpoolTime")).getTime());
 		// String -> Timestamp
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 	    Date parsedDate = dateFormat.parse((String)board.get("carpoolTime"));
@@ -89,8 +87,7 @@ public class DestinationMatchingService {
 	    
 		String userId = (String) board.get("userId");
 
-		// 시간 포맷
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+		
 		
 		// 매칭되는 regId가 필요하다( 푸쉬하기 위해 ) 매칭되는 userId가 필요하다( 디비에 저장하기 위해 )
 		for (Destination compareDest : dests) {
@@ -119,6 +116,9 @@ public class DestinationMatchingService {
 		// 매칭이 안됬다면 두 리스트가 empty 이다.
 		if( regIds.isEmpty() && userIds.isEmpty())
 			isMatchingResult = false; 
+		
+		// 시간 포맷
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 		
 		message = timeFormat.format(carpoolTime.getTime()) + " " + startPoint + " -> " + arrivePoint + " 글이 등록되었습니다.";
 		param.put("regIds", regIds);
