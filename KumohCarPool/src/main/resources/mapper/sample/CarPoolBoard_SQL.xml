@@ -18,6 +18,7 @@
 		<result column="commentNums" property="commentNums" />
 		<result column="serialNumber" property="serialNumber"/>
 		<result column="isAttend" property="isAttend" javaType="boolean" />
+		<result column="isOwner" property="isOwner" javaType="boolean" />
 	</resultMap>
 
 	<!-- 카풀 참여 entity -->
@@ -49,49 +50,95 @@ SELECT * FROM Carpoolboard WHERE
 		]]> -->
 		<!-- 'b' -> userId로 바꿔야한다.  -->
 	<![CDATA[
-			SELECT
-				*,
-				(CASE
-		    	   WHEN att.userId = #{userId} or cp.writer = #{userId} 
-			 	   THEN 1 
-			       ELSE 0 
-				 END ) as isAttend
-				 ,md5(cp.cpBoardId) as serialNumber
-			FROM Carpoolboard as cp 
-			LEFT JOIN
-				Attendant AS att 
-			ON
-				cp.cpBoardId = att.cpBoardId 
-			WHERE
-				TIMESTAMP(Now()) < carpoolTime ORDER BY carpoolTime ASC Limit #{pageIndex}, #{pageNumber}
+SELECT
+            *,
+            (CASE
+                WHEN att.userId = #{userId}
+                THEN 1 
+                ELSE 0 
+             END ) as isAttend
+             ,
+            (CASE
+                WHEN cp.writer = #{userId}
+                THEN 1 
+                ELSE 0 
+             END ) as isOwner 
+             ,
+             md5(cp.cpBoardId) as serialNumber
+         FROM Carpoolboard as cp
+         LEFT JOIN
+            Attendant AS att 
+         ON
+			cp.cpBoardId = att.cpBoardId 
+		WHERE
+			TIMESTAMP(Now()) < carpoolTime 
+			GROUP BY cp.cpBoardId ORDER BY carpoolTime ASC Limit #{pageIndex}, #{pageNumber}
 	]]>		
 	</select>
 
 	<!-- 사용자가 등록하거나 참석한거만 가져온다. -->
 	<select id="selectMyList" parameterType="map" resultMap="carpoolboardResultMap">
 	<![CDATA[
-		SELECT
-				*,md5(cp.cpBoardId) as serialNumber
-			FROM Carpoolboard as cp 
-			LEFT JOIN
-				Attendant AS att 
-			ON
-				cp.cpBoardId = att.cpBoardId 
-			WHERE
-				att.userId = #{userId}
-				OR cp.writer = #{userId}
-				and Timestamp(NOW() - INTERVAL 1 DAY) < carpoolTime ORDER BY carpoolTime
+	
+SELECT
+            *,
+            (CASE
+                WHEN att.userId = #{userId}
+                THEN 1 
+                ELSE 0 
+             END ) as isAttend
+             ,
+            (CASE
+                WHEN cp.writer = #{userId}
+                THEN 1 
+                ELSE 0 
+             END ) as isOwner 
+             ,
+             md5(cp.cpBoardId) as serialNumber
+         FROM Carpoolboard as cp 
+         LEFT JOIN
+            Attendant AS att 
+         ON
+            cp.cpBoardId = att.cpBoardId 
+         WHERE
+             att.userId = #{userId}
+             OR cp.writer = #{userId}
+			AND
+			 TIMESTAMP(Now()- INTERVAL 1 DAY) < carpoolTime 
+           	 GROUP BY cp.cpBoardId 
+        	 ORDER BY carpoolTime 
 	]]>
 	</select><!--attendant cpBoardId 바꿔야할수도잇 -->
 
 	<!-- 카풀 게시글 하나만 로드 -->
 	<select id="selectOne" parameterType="map" resultMap="carpoolboardResultMap">
+	<![CDATA[	
 		SELECT
-			*,md5(cpBoardId) as serialNumber
-		FROM
-			Carpoolboard
+            *,
+            (CASE
+                WHEN att.userId = #{userId}
+                THEN 1 
+                ELSE 0 
+             END ) as isAttend
+             ,
+            (CASE
+                WHEN cp.writer = #{userId}
+                THEN 1 
+                ELSE 0 
+             END ) as isOwner 
+             ,
+             md5(cp.cpBoardId) as serialNumber
+         FROM Carpoolboard as cp
+         LEFT JOIN
+            Attendant AS att 
+         ON
+			cp.cpBoardId = att.cpBoardId 
 		WHERE
-			cpBoardId = #{cpBoardId}
+			cp.cpBoardId = #{cpBoardId}
+			AND
+			TIMESTAMP(Now()) < carpoolTime 
+			GROUP BY cp.cpBoardId ORDER BY carpoolTime ASC 
+	]]>				
 	</select>
 
 	<!-- 일별 카풀 게시글 카운트 -->

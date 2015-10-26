@@ -149,30 +149,6 @@ public class CarPoolBoardController {
 		ModelAndView mv = new ModelAndView();
 		List<CarpoolBoard> boardList = carpoolBoardDao.selectBoardList(commandMap.getMap());
 		
-		/*
-			   boardList <- 전체 목록
-			   attendantList <- 참여 목록 
-			   작성자 인지 확인안함?
-			   필요한건? 참여여부 
-			   클라이언트에서 계산을 해줘야하나?
-			   
-			   userId를 클라이언트로 부터 받는다. 
-			   CarpoolBoard에 isMine 이라는 속성을 추가한다. 
-			   String userId = commandMap.getMap().get("userId");
-			   
-			   for ( CarpoolBoard board : boardList ) 
-			   {
-			   	  for ( Attendant attendant : attendantList )
-			   	  	  // 작성자라면 ( 게시글 작성자id == 사용자 id ) 
-			   	   	  if ( board.getUserId() == userId )
-			   	   	   			board.setMine(true);
-			   	   	  // 참여자라면 ( 게시글 보드id == 참여자 보드id == 사용자 id )  
-			   	   	  else if(  
-			   }  
-		 */
-		
-//		mv.addObject("boardlists", boardList );
-//		mv.addObject("attendantList", attendantList );
 		mv.addObject("lists",boardList);
 		mv.setViewName("jsonView");
 		return mv;
@@ -218,6 +194,7 @@ public class CarPoolBoardController {
 		CarpoolBoard cpBoard = carpoolBoardDao.selectBoardOne(commandMap.getMap());
 		List<Comment> comments = carpoolBoardDao.selectCommentList(commandMap.getMap());
 		
+		/*
 		Map<String, Object> permission = new HashMap<String, Object>();
 		// 클라이언트로 부터 받은 사용자 Id
 		String userId = (String) commandMap.get("userId");
@@ -238,9 +215,9 @@ public class CarPoolBoardController {
 		}
 		permission.put("isWriter", isWriter);
 		permission.put("isAttendant", isAttendant);
-
+		 */
 		mv.addObject("comments", comments);
-		mv.addObject("permission", permission);
+//		mv.addObject("permission", permission);
 		mv.addObject("board", cpBoard);
 		mv.setViewName("jsonView");
 		return mv;

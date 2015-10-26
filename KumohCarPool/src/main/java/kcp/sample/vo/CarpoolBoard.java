@@ -18,6 +18,7 @@ public class CarpoolBoard {
 	private int commentNums;
 	private String serialNumber;
 	private boolean isAttend;
+	private boolean isOwner;
 	
 	public int getCpBoardId() {
 		return cpBoardId;
@@ -103,6 +104,12 @@ public class CarpoolBoard {
 	}
 	public void setAttend(boolean isAttend) {
 		this.isAttend = isAttend;
+	}
+	public boolean isOwner() {
+		return isOwner;
+	}
+	public void setOwner(boolean isOwner) {
+		this.isOwner = isOwner;
 	}
 	
 }
