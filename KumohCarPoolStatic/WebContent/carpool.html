@@ -30,45 +30,45 @@
 				<div class="box_alias vhc fgw">{{models.user.alias}}</div>
 			</div>
 		</div>
-		<ul class="snb_list_menu">
+		<ul class="snb_list_menu fg5">
 			<li class="row x14" ng-click="writepage()">
 				<div class="col_4 c">
-					<i class="ico_pen"></i>
+					<i class="ico_pen x2 vc"></i>
 				</div>
-				<div class="col_6 b">
-					글쓰기
+				<div class="col_6">
+					<div class="vc">글쓰기</div>
 				</div>
 			</li>
 			<li class="row x14" ng-click="loadMessages(); modal = 'msg'; menu = !menu">
 				<div class="col_4 c">
-					<i class="ico_letter"></i>
+					<i class="ico_letter x2 vc"></i>
 				</div>
-				<div class="col_6 b">
-					메시지
+				<div class="col_6">
+					<div class="vc">메시지</div>
 				</div>
 			</li>
 			<li class="row x14" ng-click="loadDest(); modal = 'dest'; menu = !menu">
 				<div class="col_4 c">
-					<i class="ico_map"></i>
+					<i class="ico_map x2 vc"></i>
 				</div>
-				<div class="col_6 b">
-					목적지
+				<div class="col_6">
+					<div class="vc">목적지</div>
 				</div>
 			</li>
 			<li class="row x14" ng-click="loadMyCarpools(); menu = !menu">
 				<div class="col_4 c">
-					<i class="ico_user"></i>
+					<i class="ico_user x2 vc"></i>
 				</div>
-				<div class="col_6 b">
-					내 카풀
+				<div class="col_6">
+					<div class="vc">내 카풀</div>
 				</div>
 			</li>
 			<li class="row x14" ng-click="selectMatchingResult(); modal = 'match'; menu = !menu">
 				<div class="col_4 c">
-					<i class="ico_matching"></i>
+					<i class="ico_matching x2 vc"></i>
 				</div>
-				<div class="col_6 b">
-					사용자 매칭
+				<div class="col_6">
+					<div class="vc">사용자 매칭</div>
 				</div>
 			</li>
 		</ul>
@@ -77,9 +77,6 @@
 <!-- 카풀 목록 부분 -->
 <article class="cont_board">
 	<div id="cplist" class="cont_board_scroll" ng-init="loadmore()" listscroll>
-		<div class="btn_back bg2 fgw c shdw2" ng-show="isMypool" ng-click="loadmore()">
-			전체 카풀
-		</div>
 		<div id="carpoolmap" ng-show="cidx >= 0" map></div>
 		<div class="box_timebar" ng-repeat-start="c in models.carpools" data-date="{{c.formattedFullDay}}" ng-show="models.carpools[$index-1].formattedDay != c.formattedDay">
 			<div class="row">
@@ -89,8 +86,11 @@
 			</div>
 		</div>
 		<div class="box_carpool bgw shdw2" ng-repeat-end>
+			<div class="box_ticket bgp fgw x1 c shdw2" ng-click="$parent.ticket = c.serialNumber" ng-show="(c.attend || c.owner) && ($parent.cidx != $index)">
+				<div class="vhc">T<br>I<br>C<br>K<br>E<br>T</div>
+			</div>
 			<div class="row" ng-click="toggleDetail($index);readmore($event,$index)">
-				<div class="col_4 c fgp x3 b lhx5">
+				<div class="col_4 c fgp x3 lhx5">
 					{{c.formattedTime}}
 				</div>
 				<div class="col_6">
@@ -103,10 +103,10 @@
 						</div>
 					</div>
 					<div class="row lhx25">
-						<div class="col_5 c">
+						<div class="col_5 c fg4">
 							{{c.startPoint}}
 						</div>
-						<div class="col_5 c">
+						<div class="col_5 c fg4">
 							{{c.arrivePoint}}
 						</div>
 					</div>
@@ -131,17 +131,17 @@
 					<div class="col_10" mapcontainer>
 					</div>
 				</div>
-				<div class="row btn_permission bgp" ng-show="!c.permission.isWriter && !c.permission.isAttendant" ng-click="requestCarpoolAttend($index)">
+				<div class="row btn_permission bgp" ng-show="!c.owner && !c.attend" ng-click="requestCarpoolAttend($index)">
 					<div class="col_10">
 						카풀 하기
 					</div>
 				</div>
-				<div class="row btn_permission" ng-show="c.permission.isAttendant" ng-click="requestCarpoolCancel($index)">
+				<div class="row btn_permission bgp" ng-show="c.attend" ng-click="requestCarpoolCancel($index)">
 					<div class="col_10">
 						카풀 취소
 					</div>
 				</div>
-				<div class="row btn_permission" ng-show="c.permission.isWriter" ng-click="modify($index)">
+				<div class="row btn_permission bgp" ng-show="c.owner" ng-click="modify($index)">
 					<div class="col_10">
 						수정 / 삭제 하기
 					</div>
@@ -170,8 +170,20 @@
 				</div>
 			</div>
 		</div>
-		<div class="btn_back bgp fgw c shdw2" ng-show="!isMypool" ng-click="loadmore()">
-			더 보기
+		<div class="fg4 c x18" ng-show="!isMypool" ng-click="loadmore()">
+			+ <span class="u2">더 보기</span>
+		</div>
+		<div class="fg4 c x18" ng-show="isMypool" ng-click="loadmore()">
+			<span class="u2">전체 카풀 보기</span>
+		</div>
+	</div>
+</article>
+<!-- 티켓 -->
+<article class="cont_ticket bgp" ng-show="ticket" ng-click="ticket = !ticket">
+	<div class="vhc">
+		<div class="deg90">
+			<div class="x2 nowrap fgw">Serial Number</div>
+			<div class="x4 fgw">#{{ticket | limitTo:4}}</div>
 		</div>
 	</div>
 </article>
@@ -220,7 +232,7 @@
 				<div class="col_5">
 				</div>
 			</div>
-			<div class="row boundary">
+			<div class="row">
 				<div class="col_10">
 					<input class="u c" type="text" ng-model="models.dest.carpoolTime" datetime-picker date-format="yyyy-MM-dd HH:mm" readonly>
 				</div>
@@ -229,7 +241,7 @@
 		</div>
 		<div class="wrap_footer">
 			<input class="btn btn_blank fgp" type="button" value="삭제" ng-show="models.dest.isExist" ng-click="deleteDest()">
-			<input class="btn btn_blank fgp" type="button" value="설정" ng-click="saveDest(); modal = ''">
+			<input class="btn btn_blank fgp b" type="button" value="설정" ng-click="saveDest(); modal = ''">
 		</div>
 	</div>
 	<!-- 매칭 -->

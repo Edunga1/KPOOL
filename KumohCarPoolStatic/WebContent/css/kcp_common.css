@@ -108,7 +108,13 @@ input, textarea, select {
 .shdw3 {
 	box-shadow: 0 0px 6px rgba(0,0,0,.5);
 }
+.deg90 {
+	transform: rotate(90deg);
+}
 /* styling */
+.nowrap {
+	white-space: nowrap;
+}
 .flat {
 	border: 1px solid #dcdee0;
 }
@@ -116,6 +122,12 @@ input, textarea, select {
 	border-top: none;
 	border-right: none;
 	border-bottom: 1px solid #dcdee0;
+	border-left: none;
+}
+.u2 {
+	border-top: none;
+	border-right: none;
+	border-bottom: 1px solid #6e7980;
 	border-left: none;
 }
 .ul {
@@ -142,11 +154,17 @@ input, textarea, select {
 .x15 {
 	font-size: 1.5rem;
 }
+.x18 {
+	font-size: 1.8rem
+}
 .x2 {
 	font-size: 2rem;
 }
 .x3 {
 	font-size: 3rem;
+}
+.x4 {
+	font-size: 4rem;
 }
 /* line-height x */
 .lhx22 {
@@ -176,6 +194,12 @@ input, textarea, select {
 }
 .fg3 {
 	color: #707273;
+}
+.fg4 {
+	color: #6e7980;
+}
+.fg5 {
+	color: #999a9d;
 }
 .bgw {
 	background-color: #fff;
@@ -354,7 +378,7 @@ input, textarea, select {
     background-color: #b7b8b9;
 }
 .modal .wrap_body {
-	padding: 1rem 0.5rem 0.5rem 0.5rem;
+	padding: 2rem 2.5rem 0.5rem 2.5rem;
 	min-height: 100px;
 	font-size: 1.5rem;
 }
@@ -395,7 +419,7 @@ input, textarea, select {
 	color: #894800;
 }
 .modal .wrap_footer {
-	padding: 10px 10px 5px 10px;
+	padding: 0.5rem 1rem 0.5rem 1rem;
 	text-align: right;
 }
 /* modal module end */
@@ -431,10 +455,10 @@ input, textarea, select {
 .snb .snb_list_menu {
 	margin-top: 10%;
 	list-style: none;
-	color: #999a9d;
+	height: 100%;
 }
 .snb .snb_list_menu>li {
-	margin: 10% 0;
+	height: 10%;
 }
 .box_profile {
 	padding: 10px 0;
@@ -459,18 +483,20 @@ input, textarea, select {
 .cont_board_scroll {
 	padding-bottom: 5%;
 	height: 100%;
-	overflow: scroll;
+	overflow: auto;
+}
+.cont_ticket {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 }
 .detail {
 	padding-top: 20px;
 }
 .detail .row {
 	padding: 10px 0;
-}
-.btn_back {
-	margin: 0 auto;
-	padding: 1.5%;
-	width: 85%;
 }
 .btn_permission {
 	color: #fff;
@@ -484,9 +510,17 @@ input, textarea, select {
 	margin-top: 3rem;
 }
 .box_carpool {
+	position: relative;
 	margin: 1.5rem auto;
 	padding: 1rem;
-	width: 85%;
+	width: 80%;
+}
+.box_ticket {
+	position: absolute;
+	right: -9%;
+	top: 0;
+	height: 100%;
+	width: 8%;
 }
 .list_cmt>li {
 	margin-bottom: 5px;

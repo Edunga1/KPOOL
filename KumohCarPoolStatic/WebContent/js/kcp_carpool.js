@@ -128,7 +128,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// arr: 카풀 목록
 	this.carpoolDataProc = function(arr){
 		var time = new Date(arr.carpoolTime);
-		arr.formattedTime = this.addZero(time.getHours()) + " : " + this.addZero(time.getMinutes());
+		arr.formattedTime = this.addZero(time.getHours()) + ":" + this.addZero(time.getMinutes());
 		arr.formattedDay = time.getMonth()+1 + "/" + time.getDate();
 		arr.formattedFullDay = time.getFullYear() + " " + arr.formattedDay;
 		return arr;
@@ -410,7 +410,6 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 			function(response){
 				$scope.models.carpools[i] = UtilService.carpoolDataProc(response.board);
 				$scope.models.carpools[i].comments = response.comments;
-				$scope.models.carpools[i].permission = response.permission;
 			}
 		);
 	}
@@ -421,6 +420,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 		AjaxService.selectMyCarpoolList().then(
 			function(response){
 				if(!response.isEmpty){
+					console.log(response);
 					pgn = 0;
 					$scope.isMypool = true;
 					for(var i in response.lists){
@@ -440,7 +440,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 			function(response){
 				if(response.res){
 					$scope.models.carpools[i].currentPersons = response.currentPersons;
-					$scope.models.carpools[i].permission.isAttendant = true;
+					$scope.models.carpools[i].attend = true;
 					alert("해당 카풀에 참여했습니다!");
 				}else{
 					alert("더 이상 참여할 수 없습니다.");
@@ -458,7 +458,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 			function(response){
 				if(response.res){
 					$scope.models.carpools[i].currentPersons = response.currentPersons;
-					$scope.models.carpools[i].permission.isAttendant = false;
+					$scope.models.carpools[i].attend = false;
 					alert("취소되었습니다.");
 				}
 			}
