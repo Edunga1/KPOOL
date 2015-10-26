@@ -53,7 +53,7 @@ SELECT * FROM Carpoolboard WHERE
 SELECT
             *,
             (CASE
-                WHEN att.userId = #{userId}
+                WHEN exists(SELECt * FROM Attendant as ad WHERE ad.userId = #{userId} AND ad.cpBoardId = cp.cpBoardId)
                 THEN 1 
                 ELSE 0 
              END ) as isAttend
@@ -66,13 +66,9 @@ SELECT
              ,
              md5(cp.cpBoardId) as serialNumber
          FROM Carpoolboard as cp
-         LEFT JOIN
-            Attendant AS att 
-         ON
-			cp.cpBoardId = att.cpBoardId 
 		WHERE
-			TIMESTAMP(Now()) < carpoolTime 
-			GROUP BY cp.cpBoardId ORDER BY carpoolTime ASC Limit #{pageIndex}, #{pageNumber}
+			TIMESTAMP(Now()) < carpoolTime
+			ORDER BY carpoolTime ASC Limit #{pageIndex}, #{pageNumber}
 	]]>		
 	</select>
 
@@ -105,7 +101,6 @@ SELECT
              OR cp.writer = #{userId}
 			AND
 			 TIMESTAMP(Now()- INTERVAL 1 DAY) < carpoolTime 
-           	 GROUP BY cp.cpBoardId 
         	 ORDER BY carpoolTime 
 	]]>
 	</select><!--attendant cpBoardId 바꿔야할수도잇 -->
