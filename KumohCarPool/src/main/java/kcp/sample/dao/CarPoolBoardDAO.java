@@ -26,7 +26,7 @@ public class CarPoolBoardDAO extends AbstractDAO{
 	}
 	
 	/**
-	 * 등록/참여한 게시글 목록 조회 
+	 * 등록/참여한 게시글 목록 조회
 	 * @param  map [사용자ID]
 	 * @return List<등록/참여한 게시글>
 	 * @throws Exception

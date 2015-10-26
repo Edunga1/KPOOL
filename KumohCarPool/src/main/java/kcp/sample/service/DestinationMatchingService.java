@@ -13,7 +13,7 @@ import kcp.sample.vo.Destination;
 
 public class DestinationMatchingService {
 
-	public Map<String,Object> calculateDestinationMatching(Destination targetDest, List<Destination> dests) {
+	public static Map<String,Object> calculateDestinationMatching(Destination targetDest, List<Destination> dests) {
 		int matchingCount = 0;
 		boolean isMatching = false;
 		String message = "";
@@ -65,7 +65,7 @@ public class DestinationMatchingService {
 		return resultMap;
 	}
 
-	public boolean calculateBoardAndUsersMatching(Map<String, Object> board, Map<String, Object> param) throws ParseException {
+	public static boolean calculateBoardAndUsersMatching(Map<String, Object> board, Map<String, Object> param) throws ParseException {
 		// 매칭결과가 null 인지 아닌지 구분을 위한 변수. 초기값은 매칭결과가 존재
 		boolean isMatchingResult = true;
 			

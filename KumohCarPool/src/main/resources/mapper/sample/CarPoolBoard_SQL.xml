@@ -47,11 +47,12 @@
 SELECT * FROM Carpoolboard WHERE
 				TIMESTAMP(Now()) < carpoolTime ORDER BY carpoolTime ASC LIMIT #{pageIndex}, #{pageNumber}
 		]]> -->
+		<!-- 'b' -> userId로 바꿔야한다.  -->
 	<![CDATA[
 			SELECT
 				*,
 				(CASE
-		    	   WHEN att.userId = 'b' or cp.writer = 'b'
+		    	   WHEN att.userId = #{userId} or cp.writer = #{userId} 
 			 	   THEN 1 
 			       ELSE 0 
 				 END ) as isAttend

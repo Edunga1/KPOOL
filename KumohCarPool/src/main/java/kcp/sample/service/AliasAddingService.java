@@ -27,13 +27,12 @@ public class AliasAddingService {
 	public void setUserAlias( Map<String,Object> param)
 	{
 		Poketmon poketmon = Poketmon.getRandom();
-		
 		String deviceId = (String)param.get("userId");
 		String aliasNumber = deviceId.substring(0, 4);
 		String alias = poketmon.toString();
 		int indexNumber = poketmon.ordinal();
 		// 리소스( 포켓몬 사진 )을 위한 인덱스
-		param.put("aliasResourceIndex", indexNumber);
+		param.put("aliasResourceIndex", indexNumber+1);
 		//  포켓몬 이름 + 디바이스 ID 4글자  
 		param.put("alias", alias+"#"+aliasNumber);
 	}

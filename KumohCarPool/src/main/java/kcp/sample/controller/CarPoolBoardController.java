@@ -103,20 +103,21 @@ public class CarPoolBoardController {
 	 * - 기능 : 클라이언트로 부터 받은 사용자정보를 데이터베이스에 저장한다.
 	 * - 호출 : 사용자 조회를 한뒤 중복이 되지 않으면 deviceId로 사용자를 추가할 때 호출된다.      
 	 * @param commandMap  [ 사용자ID ]
-	 * @return 
+	 * @return 사용자 정보가 없다면 등록 후 반환, 있다면 그냥 반환
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/carpoolboard/insertUser.do")
 	public ModelAndView insertUser(CommandMap commandMap) throws Exception {
 		ModelAndView mv = new ModelAndView("");
-		
+		User user = userDao.selectUser(commandMap.getMap());
 		// 회원이 등록이 안됬다면
-		if (userDao.selectUser(commandMap.getMap())==null) {
+		if (user==null) {
 			// 벌명 생성 
 			AliasAddingService aliasAddingService = new AliasAddingService();
 			aliasAddingService.setUserAlias(commandMap.getMap());
 			userDao.insertUser(commandMap.getMap());
 		}
+		mv.addObject("user",user);
 		mv.setViewName("jsonView");
 		return mv;
 	}
@@ -274,13 +275,13 @@ public class CarPoolBoardController {
 				Map<String, Object> param = new HashMap<String, Object>();
 				List<Destination> dests = destinationDao.selectDestination();
 				
-				DestinationMatchingService destMatchingService = new DestinationMatchingService();
+//				DestinationMatchingService destMatchingService = new DestinationMatchingService();
 				MessagePushService messagePushService = new MessagePushService();
 				param.put("dests", dests);
 				// 매칭 결과를 구분하기 위한 변수
 				boolean isMatchingResult = false;
 				// 게시글과 사용자를 매칭하는 함수
-				isMatchingResult = destMatchingService.calculateBoardAndUsersMatching(commandMap.getMap(), param);
+				isMatchingResult = DestinationMatchingService.calculateBoardAndUsersMatching(commandMap.getMap(), param);
 		
 				// 매칭 결과가 있다면
 				if (isMatchingResult) {

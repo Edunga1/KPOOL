@@ -75,9 +75,9 @@ public class DestinationController {
 		if (targetDest != null) {
 			List<Destination> destinationLists = destinationDao.selectDestination();
 			// 매칭 서비스를 위한 객체 생성
-			DestinationMatchingService destMatchingService = new DestinationMatchingService();
+//			DestinationMatchingService destMatchingService = new DestinationMatchingService();
 			// 매칭 함수 호출
-			Map<String,Object> reultMap = destMatchingService.calculateDestinationMatching(targetDest, destinationLists );
+			Map<String,Object> reultMap = DestinationMatchingService.calculateDestinationMatching(targetDest, destinationLists );
 			res = true;
 			mv.addObject("message", reultMap.get("message"));
 			mv.addObject("isMatching", reultMap.get("isMatching"));
