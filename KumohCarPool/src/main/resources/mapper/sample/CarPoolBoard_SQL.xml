@@ -101,7 +101,7 @@ SELECT
              OR cp.writer = #{userId}
 			AND
 			 TIMESTAMP(Now()- INTERVAL 1 DAY) < carpoolTime 
-        	 ORDER BY carpoolTime 
+        	 GROUP BY cp.cpBoardId ORDER BY carpoolTime 
 	]]>
 	</select><!--attendant cpBoardId 바꿔야할수도잇 -->
 
