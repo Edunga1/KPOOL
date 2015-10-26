@@ -108,10 +108,10 @@ SELECT
 	<!-- 카풀 게시글 하나만 로드 -->
 	<select id="selectOne" parameterType="map" resultMap="carpoolboardResultMap">
 	<![CDATA[	
-		SELECT
+SELECT
             *,
             (CASE
-                WHEN att.userId = #{userId}
+                WHEN exists(SELECt * FROM Attendant as ad WHERE ad.userId = #{userId} AND ad.cpBoardId = cp.cpBoardId)
                 THEN 1 
                 ELSE 0 
              END ) as isAttend
@@ -124,17 +124,11 @@ SELECT
              ,
              md5(cp.cpBoardId) as serialNumber
          FROM Carpoolboard as cp
-         LEFT JOIN
-            Attendant AS att 
-         ON
-			cp.cpBoardId = att.cpBoardId 
 		WHERE
-			cp.cpBoardId = #{cpBoardId}
-			AND
-		    att.userId = #{userId}
-		    or
-		    cp.writer=#{userId}
-			GROUP BY cp.cpBoardId  
+			cpBoardId = #{cpBoardId}
+				AND
+			 TIMESTAMP(Now()- INTERVAL 1 DAY) < carpoolTime 
+        	 ORDER BY carpoolTime 
 	]]>				
 	</select>
 
