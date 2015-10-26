@@ -23,11 +23,11 @@
 		<div class="row box_profile bgp">
 			<div class="col_4">
 				<div class="box_imgc vhc">
-					<img src="./img/pokemon/91.png">
+					<img ng-src="./img/pokemon/{{models.user.aliasResourceIndex}}.png">
 				</div>
 			</div>
 			<div class="col_6">
-				<div class="box_alias vhc fgw">롱스톤#1a5s</div>
+				<div class="box_alias vhc fgw">{{models.user.alias}}</div>
 			</div>
 		</div>
 		<ul class="snb_list_menu">
@@ -65,7 +65,7 @@
 			</li>
 			<li class="row x14" ng-click="selectMatchingResult(); modal = 'match'; menu = !menu">
 				<div class="col_4 c">
-					<i class="ico_user"></i>
+					<i class="ico_matching"></i>
 				</div>
 				<div class="col_6 b">
 					사용자 매칭
@@ -81,7 +81,7 @@
 			전체 카풀
 		</div>
 		<div id="carpoolmap" ng-show="cidx >= 0" map></div>
-		<div class="timebar" ng-repeat-start="c in models.carpools" data-date="{{c.formattedFullDay}}" ng-show="models.carpools[$index-1].formattedDay != c.formattedDay">
+		<div class="box_timebar" ng-repeat-start="c in models.carpools" data-date="{{c.formattedFullDay}}" ng-show="models.carpools[$index-1].formattedDay != c.formattedDay">
 			<div class="row">
 				<div class="col_4 line_hr"></div>
 				<div class="col_2 c">{{c.formattedDay}}</div>
@@ -94,7 +94,7 @@
 					{{c.formattedTime}}
 				</div>
 				<div class="col_6">
-					<div class="row lhx25">
+					<div class="row lhx22">
 						<div class="col_5 c fgp x1">
 							FROM
 						</div>

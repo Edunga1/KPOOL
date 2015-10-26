@@ -23,6 +23,9 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.ico_matching:before {
+	content: "\e900";
+}
 .ico_right:before {
 	content: "\e800";
 }

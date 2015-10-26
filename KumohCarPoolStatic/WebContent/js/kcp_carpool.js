@@ -8,7 +8,7 @@
 
 // 카풀 서버와 디바이스 정보
 var KCP = {
-	domain:				"http://192.168.1.7:8080/KumohCarPool",	// 서버 URL
+	domain:				"http://192.168.218.201:8080/KumohCarPool",	// 서버 URL
 	deviceid:			null,									// device id
 	regid:				null,									// google gcm regid
 };
@@ -108,18 +108,6 @@ document.addEventListener("deviceready", function(){
 }, false);
 
 var module = angular.module("kcp", ["angularjs-datetime-picker"])
-.run(function($http){
-	// 사용자 등록
-	$http({
-		url: KCP.domain+"/carpoolboard/insertUser.do",
-		method: "post",
-		params: {
-			"userId": KCP.deviceid
-		}
-	})
-	.success(function(data, status){
-	});
-})
 .service("UtilService", function(){
 
 	// 10미만 정수를 받아 2자리 수로 변환하여 반환한다.
@@ -140,7 +128,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// arr: 카풀 목록
 	this.carpoolDataProc = function(arr){
 		var time = new Date(arr.carpoolTime);
-		arr.formattedTime = this.addZero(time.getHours()) + ":" + this.addZero(time.getMinutes());
+		arr.formattedTime = this.addZero(time.getHours()) + " : " + this.addZero(time.getMinutes());
 		arr.formattedDay = time.getMonth()+1 + "/" + time.getDate();
 		arr.formattedFullDay = time.getFullYear() + " " + arr.formattedDay;
 		return arr;
@@ -159,7 +147,6 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 			var startPoint = new daum.maps.LatLng(lat, lng);
 			var mapOption = {
 					center: startPoint,
-					draggable: false,
 					level: 3
 			}
 			this.map.map = new daum.maps.Map(element, mapOption);
@@ -219,7 +206,8 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 		return ajax(
 			KCP.domain+"/carpoolboard/getList.do", {
 				"pageIndex": pgn,
-				"pageNumber": 3
+				"pageNumber": 3,
+				"userId": KCP.deviceid
 			}
 		);
 	}
@@ -360,6 +348,15 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 			}
 		);
 	}
+	
+	// 사용자 정보 등록 및 획득
+	this.insertUser = function(){
+		return ajax(
+			KCP.domain+"/carpoolboard/insertUser.do", {
+				"userId": KCP.deviceid
+			}
+		);
+	}
 })
 .controller("CarpoolCtrl", function($window, $scope, $http, UtilService, AjaxService, MapService){
 	var pgn = 0;			// 카풀 목록 pagination
@@ -379,6 +376,10 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 			message: "",
 			isMatching: false
 		},
+		user: {
+			alias: "",
+			aliasResourceIndex: 1
+		}
 	}
 	
 	// 카풀 로드
@@ -537,6 +538,15 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 		);
 	}
 	
+	// 사용자 정보 로드
+	$scope.loadUser = function(){
+		AjaxService.insertUser().then(
+			function(response){
+				angular.extend($scope.models.user, response.user);
+			}
+		);
+	}
+	
 	// 상세 보기 toggle
 	$scope.toggleDetail = function(i){
 		if($scope.cidx == i)
@@ -572,11 +582,12 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	
 	// initialize
 	$scope.loadDest();	// 로드 직후 카풀 만들기 사용을 위해서..
-
+	$scope.loadUser();// 사용자 등록 및 정보 획득
 })
 .controller("WriteFormCtrl", function($scope, AjaxService, UtilService, MapService){
 
 	$scope.MapService = MapService;
+	$scope.modal = "";
 	
 	// input에 대한 model
 	$scope.formData = {
@@ -722,7 +733,7 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	return {
 		link: function(scope, element, attrs){
 			var callback = function(){
-				var timebars = element[0].getElementsByClassName("timebar");
+				var timebars = element[0].getElementsByClassName("box_timebar");
 				var prev = timebars[0];
 				for(var i=1; i<timebars.length; i++){
 					if(timebars[i].offsetTop > element[0].scrollTop)

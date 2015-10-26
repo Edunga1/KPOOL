@@ -1,6 +1,6 @@
 @font-face {
-	font-family: nanuml;
-	src: url(../font/nanumgothiclight.ttf) format('truetype');
+	font-family: system;
+	src: url(../font/NanumGothic-Regular.ttf) format('truetype');
 }
 
 @media (max-width:360px){html{font-size:10px;}}
@@ -36,8 +36,11 @@ html, body {
 body {
     line-height:1;
 	background-color: #f8f8f8;
-    font-family: 'nanuml', serif;
+    font-family: system;
     font-size: 2rem;
+}
+body.hdn {
+	overflow: hidden;
 }
 
 article,aside,details,figcaption,figure,
@@ -67,29 +70,19 @@ div {
 
 input, textarea, select {
 	font-size: 1.5rem;
-	box-sizing: border-box;
-}
-
-input[type=text], input[type=number], select {
-	width: 100%;
-	height: 30px;
     vertical-align:middle;
+	box-sizing: border-box;
 }
 /* html5 reset end */
 
 /* body */
 .body_serv2 {
 	padding-bottom: 50%;
-	background-color: #f8726e;
 }
 .none {
 	display: none;
 }
 /* positioning */
-.before {
-	position: absolute;
-	margin: 5px auto auto -8px;
-}
 .vhc {
 	top: 50%;
 	left: 50%;
@@ -97,10 +90,12 @@ input[type=text], input[type=number], select {
 	transform: translateX(-50%) translateY(-50%);
 }
 .hc {
+	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
 }
 .vc {
+	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
 }
@@ -114,9 +109,6 @@ input[type=text], input[type=number], select {
 	box-shadow: 0 0px 6px rgba(0,0,0,.5);
 }
 /* styling */
-.ico {
-	color: #ff7e79;
-}
 .flat {
 	border: 1px solid #dcdee0;
 }
@@ -141,6 +133,9 @@ input[type=text], input[type=number], select {
 .x1 {
 	font-size: 1rem;
 }
+.x12 {
+	font-size: 1.2rem;
+}
 .x14 {
 	font-size: 1.4rem;
 }
@@ -154,12 +149,19 @@ input[type=text], input[type=number], select {
 	font-size: 3rem;
 }
 /* line-height x */
+.lhx22 {
+	line-height: 2.2rem;
+}
 .lhx25 {
 	line-height: 2.5rem;
+}
+.lhx47 {
+	line-height: 4.7rem;
 }
 .lhx5 {
 	line-height: 5rem;
 }
+/* padding-left x */
 .b {
 	font-weight: bold;
 }
@@ -242,28 +244,24 @@ input[type=text], input[type=number], select {
 .row.border_top {
 	border-top: 2px solid #dcdee0;
 }
+.row input, textarea {
+	width: 100%;
+}
 .row textarea {
 	resize: none;
-	margin-top: 10px;
-	padding: 10px;
-	width: 100%;
-	height: 100px;
-}
-.row input {
-	padding: 0 10px;
+	padding: 0.5rem;
+	height: 8rem;
 }
 .row .desc {
-	padding: 0 10px;
-	height: 20px;
-	color: #b7baba;
-	font-size: 1.2rem;
+	padding: 0.5rem 1rem;
 }
-.row .right {
-	text-align: right;
+.row input {
+	padding: 0.5rem 1rem;
 }
 [class^="col_"],
 [class*=" col_"]
  {
+ 	display: table-cell;
 	position: relative;
 	float: left;
 	min-height: 1px;
@@ -324,7 +322,7 @@ input[type=text], input[type=number], select {
 	overflow: scroll;
 }
 .modal {
-	width: 80%;
+	width: 90%;
 	display: inline-block;
 	position: relative;
 	left: 0;
@@ -353,9 +351,12 @@ input[type=text], input[type=number], select {
     background-color: #b7b8b9;
 }
 .modal .wrap_body {
-	padding: 20px 10px 10px 10px;
+	padding: 1rem 0.5rem 0.5rem 0.5rem;
 	min-height: 100px;
 	font-size: 1.5rem;
+}
+.modal .wrap_body.full {
+	padding: 0;
 }
 .modal .wrap_body ul {
 	height: 200px;
@@ -453,7 +454,7 @@ input[type=text], input[type=number], select {
 	overflow: hidden;
 }
 .cont_board_scroll {
-	padding: 10% 0;
+	padding-bottom: 5%;
 	height: 100%;
 	overflow: scroll;
 }
@@ -477,9 +478,12 @@ input[type=text], input[type=number], select {
 .btn_cmt {
 	line-height: 30px;
 }
+.box_timebar {
+	margin-top: 3rem;
+}
 .box_carpool {
-	margin: 20px auto;
-	padding: 10px;
+	margin: 1.5rem auto;
+	padding: 1rem;
 	width: 85%;
 }
 .list_cmt>li {
@@ -490,7 +494,7 @@ input[type=text], input[type=number], select {
 }
 .box_cmt_contents {
 	display: inline-block;
-	padding: 5px;
+	padding: 0.5rem;
 	max-width: 80%;
 	border-radius: 5px;
 	word-break: break-all;
@@ -506,13 +510,9 @@ input[type=text], input[type=number], select {
 	width: 86%;
 	text-align: right;
 }
-#modalMap {
-	width: 80%;
-}
-#modalMap #map {
+#map {
 	width: 100%;
 	height: 300px;
-	border-radius: 10px;
 }
 #modalRoute {
 	width: 80%;

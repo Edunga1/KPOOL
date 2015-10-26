@@ -9,7 +9,7 @@
 <link rel="stylesheet" type="text/css" href="./css/font-icon.css">
 <link rel="stylesheet" type="text/css" href="./css/kcp_common.css">
 </head>
-<body class="body_serv2" ng-controller="WriteFormCtrl">
+<body class="body_serv2 bgp" ng-controller="WriteFormCtrl" ng-class="{'hdn':modal!=''}">
 <header>
 </header>
 <nav class="gnb_bt" role="navigation">
@@ -18,7 +18,7 @@
 	<form name="form" ng-submit="write()">
 	<div class="cont_forms shdw">
 		<div class="row">
-			<div class="col_10 desc">
+			<div class="col_10 desc fg2 x12">
 				날짜
 			</div>
 		</div>
@@ -28,10 +28,10 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col_5 desc">
+			<div class="col_5 desc fg2 x12">
 				출발지
 			</div>
-			<div class="col_5 desc">
+			<div class="col_5 desc fg2 x12">
 				목적지
 			</div>
 		</div>
@@ -44,10 +44,10 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col_5 desc">
+			<div class="col_5 desc fg2 x12">
 				차량번호/종류
 			</div>
-			<div class="col_5 desc">
+			<div class="col_5 desc fg2 x12">
 				카풀 인원
 			</div>
 		</div>
@@ -60,18 +60,18 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col_10 desc">
+			<div class="col_10 desc fg2 x12">
 				카풀 위치
 			</div>
 		</div>
 		<div class="row boundary">
 			<div class="col_10" ng-click="modal = 'map'">
-				<i class="ico ico_location before x15"></i>
+				<i class="ico_location vc fgp x15"></i>
 				<input type="text" class="u" placeholder="클릭해서 지정해 주세요." readonly ng-model="formData.startPosAddr">
 			</div>
 		</div>
 		<div class="row">
-			<div class="col_10 desc">
+			<div class="col_10 desc fg2 x12">
 				메모
 			</div>
 		</div>
@@ -92,13 +92,13 @@
 <!-- 모달 부분 -->
 <article>
 	<div class="overlay" ng-show="modal" ng-click="modal = ''">
-		<div class="modal" id="modalMap" ng-show="modal == 'map'" ng-click="$event.stopPropagation()">
+		<div class="modal" ng-show="modal == 'map'" ng-click="$event.stopPropagation()">
 			<div class="wrap_header">
 				<div class="tit">
 					카풀 위치 지정
 				</div>
 			</div>
-			<div class="wrap_body">
+			<div class="wrap_body full">
 				<div id="map" map>
 				</div>
 			</div>
@@ -106,6 +106,7 @@
 				<input class="btn_blank" type="button" value="학교" ng-click="MapService.moveMarker(36.1425305, 128.394327)">
 				<input class="btn_blank" type="button" value="대구" ng-click="MapService.moveMarker(35.870913, 128.593993)">
 				<input class="btn_blank" type="button" value="옥계" ng-click="MapService.moveMarker(36.1368618, 128.4118315)">
+				<input class="btn_blank" type="button" value="구미역" ng-click="MapService.moveMarker(36.1282783, 128.3286413,17)">
 				<input class="btn_blank fgp" type="button" value="설정" ng-click="setCarpoolPos(); modal = ''">
 			</div>
 		</div>
