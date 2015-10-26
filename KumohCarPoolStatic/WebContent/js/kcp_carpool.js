@@ -9,7 +9,7 @@
 // 카풀 서버와 디바이스 정보
 var KCP = {
 	domain:				"http://192.168.218.201:8080/KumohCarPool",	// 서버 URL
-	deviceid:			null,									// device id
+	deviceid:			"zb",									// device id
 	regid:				null,									// google gcm regid
 };
 
@@ -19,7 +19,7 @@ document.addEventListener("backbutton", function (e){
 }, false);
 
 // device 정보 획득 후 angularjs 부트스트랩
-document.addEventListener("deviceready", function(){
+document.addEventListener("DOMContentLoaded", function(){
 
 	// 푸쉬 Receive / Regist Callback function - ANDROID
 	// onNotification***은 반드시 window의 멤버함수로 존재해야 함
