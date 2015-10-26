@@ -137,9 +137,9 @@ SELECT
 			cp.cpBoardId = #{cpBoardId}
 			AND
 		    att.userId = #{userId}
-			AND
-			TIMESTAMP(Now()) < carpoolTime 
-			GROUP BY cp.cpBoardId ORDER BY carpoolTime ASC 
+		    or
+		    cp.writer=#{userId}
+			GROUP BY cp.cpBoardId  
 	]]>				
 	</select>
 
