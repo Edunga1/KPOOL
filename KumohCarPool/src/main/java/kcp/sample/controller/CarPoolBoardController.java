@@ -194,7 +194,6 @@ public class CarPoolBoardController {
 		// 리스트가 비지 않는다면
 		if (!list.isEmpty()) {
 			mv.setViewName("jsonView");
-			mv.addObject("isMine", true);
 			mv.addObject("lists", list);
 		}
 		// 리스트가 비었다면, ajax로 json 형태로
