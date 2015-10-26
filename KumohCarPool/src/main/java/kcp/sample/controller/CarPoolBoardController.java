@@ -194,30 +194,7 @@ public class CarPoolBoardController {
 		CarpoolBoard cpBoard = carpoolBoardDao.selectBoardOne(commandMap.getMap());
 		List<Comment> comments = carpoolBoardDao.selectCommentList(commandMap.getMap());
 		
-		/*
-		Map<String, Object> permission = new HashMap<String, Object>();
-		// 클라이언트로 부터 받은 사용자 Id
-		String userId = (String) commandMap.get("userId");
-
-		// 권한 검사를 위한 작성자 Id ( search By boardId )
-		String writer = cpBoard.getUserId();
-
-		// 작성자, 참여자
-		boolean isWriter = false;
-		boolean isAttendant = false;
-
-		// 작성자라면
-		if (userId == writer || userId.equals(writer))
-			isWriter = true;
-		// 참여자라면
-		if (carpoolBoardDao.isAttend(commandMap.getMap()) != null) {
-			isAttendant = true;
-		}
-		permission.put("isWriter", isWriter);
-		permission.put("isAttendant", isAttendant);
-		 */
 		mv.addObject("comments", comments);
-//		mv.addObject("permission", permission);
 		mv.addObject("board", cpBoard);
 		mv.setViewName("jsonView");
 		return mv;

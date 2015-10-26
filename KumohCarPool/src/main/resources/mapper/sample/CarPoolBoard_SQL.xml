@@ -226,6 +226,8 @@ SELECT
 		FROM
 			Attendant
 		WHERE
+			cpBoardId=#{cpBoardId}
+			And 
 			userId = #{userId}
 	</delete>
 	
