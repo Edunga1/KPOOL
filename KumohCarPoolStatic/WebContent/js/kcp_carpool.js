@@ -8,7 +8,7 @@
 
 // 카풀 서버와 디바이스 정보
 var KCP = {
-	domain:				"http://192.168.218.201:8080/KumohCarPool",	// 서버 URL
+	domain:				"http://localhost:8080/KumohCarPool",	// 서버 URL
 	// deviceid:			"a",									// device id for test
 	deviceid:			null,									// device id
 	regid:				null,									// google gcm regid
@@ -580,6 +580,14 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	// 카풀 수정/삭제 페이지로 이동
 	$scope.modify = function(i){
 		window.location.href = "carpool_add.html?boardid=" + $scope.models.carpools[i].cpBoardId;
+	}
+	
+	// 홈으로, 새로고침을 한 것처럼 카풀을 새로 로드한다.
+	$scope.home = function(){
+		pgn = 0;
+		$scope.models.carpools = [];
+		$scope.isMypool = false;
+		$scope.loadmore();
 	}
 	
 	// initialize

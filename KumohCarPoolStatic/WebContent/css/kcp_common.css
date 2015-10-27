@@ -432,9 +432,15 @@ input, textarea, select {
 	position: relative;
 	height: 9%;
 }
-.gnb .btn_menu {
+.gnb .btn_menu_r {
 	position: absolute;
 	right: 0;
+	width: 10%;
+	height: 100%;
+}
+.gnb .btn_menu_l {
+	position: absolute;
+	left: 0;
 	width: 10%;
 	height: 100%;
 }
