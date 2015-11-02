@@ -88,16 +88,28 @@ input, textarea, select {
 	left: 50%;
 	position: absolute;
 	transform: translateX(-50%) translateY(-50%);
+	-ms-transform: translateX(-50%) translateY(-50%);
+	-webkit-transform: translateX(-50%) translateY(-50%);
+	-o-transform: translateX(-50%) translateY(-50%);
+	-moz-transform: translateX(-50%) translateY(-50%);
 }
 .hc {
 	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
+	-ms-transform: translateX(-50%);
+	-webkit-transform: translateX(-50%);
+	-o-transform: translateX(-50%);
+	-moz-transform: translateX(-50%);
 }
 .vc {
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	-o-transform: translateY(-50%);
+	-moz-transform: translateY(-50%);
 }
 .shdw {
 	box-shadow: 10px 10px 10px rgba(0,0,0,.2);
@@ -110,6 +122,10 @@ input, textarea, select {
 }
 .deg90 {
 	transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
 }
 /* styling */
 .nowrap {
