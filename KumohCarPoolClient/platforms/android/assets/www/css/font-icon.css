@@ -23,6 +23,15 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.ico_home:before {
+	content: "\e901";
+}
+.ico_matching:before {
+	content: "\e900";
+}
+.ico_right:before {
+	content: "\e800";
+}
 .ico_map:before {
 	content: "\e600";
 }

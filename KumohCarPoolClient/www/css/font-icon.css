@@ -23,8 +23,26 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.ico_target:before {
+.ico_home:before {
+	content: "\e901";
+}
+.ico_matching:before {
+	content: "\e900";
+}
+.ico_right:before {
+	content: "\e800";
+}
+.ico_map:before {
 	content: "\e600";
+}
+.ico_ticket:before {
+	content: "\e603";
+}
+.ico_menu:before {
+	content: "\e604";
+}
+.ico_pen:before {
+	content: "\e605";
 }
 .ico_user:before {
 	content: "\e60e";
@@ -32,38 +50,8 @@
 .ico_location:before {
 	content: "\e60b";
 }
-.ico_search:before {
-	content: "\e60a";
-}
 .ico_letter:before {
 	content: "\e601";
-}
-.ico_bell:before {
-	content: "\e606";
-}
-.ico_bell-s:before {
-	content: "\e607";
-}
-.ico_bus:before {
-	content: "\e608";
-}
-.ico_calendar:before {
-	content: "\e603";
-}
-.ico_arrow-right:before {
-	content: "\e60f";
-}
-.ico_arrow-up:before {
-	content: "\e60d";
-}
-.ico_triangle-down:before {
-	content: "\e60c";
-}
-.ico_plus:before {
-	content: "\e609";
-}
-.ico_comment:before {
-	content: "\e605";
 }
 .ico_car:before {
 	content: "\e602";

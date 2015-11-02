@@ -1,755 +1,763 @@
-(function(e) {
-(function($) {
-	"use strict"
-	
-	/* global variables */
-	var defaults = {
-		loadDelay:			500,						// 로드 딜레이
-		nBottomGap:			0,							// 스크롤바가 최하단인지 확인할 때 여유간격
-		pageNums:			5,							// 로드 할 카풀 수
-		urlCarpoolList:		"./carpool.html",			// 카풀목록 페이지 URL
-		urlCarpoolAdd:		"./carpool_add.html",		// 카풀등록 페이지 URL
-		domain:				KCP.domain,					// 서버 URL
-	}
-	var globals = {
-		timecuts:			new Array(),				// 시간 경계선 목록
-		pgn:				0,							// 로드할 게시글 인덱스(pagination)
-		isLoading:			false,						// 현재 로드중인지 여부
-		latestLoadTime:		new Date(0),				// 최근의 로드시간
-		currBoardId:		-1,							// 현재 읽고있는 게시글 id
-		isActiveLoadmore:	true,						// 더 보기 허용여부
-		isMyCarpoolMode:	false,						// 내 카풀보기 모드 여부
-		map:				null,						// daum map
-		marker:				null,						// daum map marker
-		userDestTime:		"",							// 사용자 목적지설정 시간
-		userDestStart:		"",							// 사용자 목적지설정 출발지
-		userDestArrive:		"",							// 사용자 목적지설정 도착지
-		nDateBottom:			0,						// 상단 날짜 컨테이너 bottom
-	}
-	/* functions */
-	// 게시글 로드
-	var loadmore = function(){
-		// 로딩 중이거나, 더 보기가 준비되지 않았거나, 더 보기 허용을 하지 않았으면 종료
-		if(globals.isLoading || !isLoadReady() || !globals.isActiveLoadmore)
-			return false;
-		globals.isLoading = true;
-		/* 로딩 보류 */
-		// $("#contBoardBottom").loading(true);
-		$.ajax({
-			url: defaults.domain+"/carpoolboard/getList.do",
-			type: "post",
-			data: {
-				"pageIndex": globals.pgn,
-				"pageNumber": defaults.pageNums
-			},
-			success: function(response){
-				// 로드한 게시글 붙임
-				globals.isLoading = false;
-				globals.latestLoadTime = new Date();
-				printCarpoolList(response.lists);
-				// 타임바 갱신
-				refreshContDate();
-			},
-			error: function(){
-				globals.isLoading = false;
-				globals.latestLoadTime = new Date();
-			},
-			complete: function(){
-				/* @TEST 로딩 보류 */
-				// $("#contBoardBottom").loading(false);
-			}
-		});
-	}
-	// 상단 시간바 갱신
-	var refreshContDate = function(sctop){
-		var $timeCuts = $(".time_cut");
-		if($timeCuts.length == 0)
-			return false;
-		var time = $timeCuts[0].innerHTML;
-		$timeCuts.each(function(idx){
-			if(idx == 0) return true;
-			if($(this).offset().top > globals.nDateBottom)
-				return false;
-			time = this.innerHTML;
-		});
-		$("#nowPosTime").text(time);
-	}
-	// 메시지 모달 내 탭 이동
-	var messageModalTabToggle = function(e){
-		// 탭 effect
-		$("#modalDestination .active").removeClass("active");
-		$(e.delegateTarget).addClass("active");
-		// 탭에 해당하는 컨테이너 토글
-		$("#tabDestSetup, #tabMatching").each(function(){
-			if($(this).hasClass("active"))
-				$($(this).data("target")).show();
-			else
-				$($(this).data("target")).hide();
-		});
-	}
-	// 알람 토글
-	// element
-	//  아이콘 element
-	var toggleAlarm = function(element){
-		if($(element).hasClass("ico_bell")){
-			$(element).removeClass("ico_bell").addClass("ico_bell-s");
-		}else{
-			$(element).removeClass("ico_bell-s").addClass("ico_bell");
-		}
-	}
-	// 스크롤이 최하단에 있는 경우 게시글 추가 로드
-	var loadmoreWhenScrollBottom = function(){
-		var $box = $("#boxListCarpool");
-		var endpoint = $box.height() + $box.scrollTop() + defaults.nBottomGap;
-		if(endpoint >= $box.prop("scrollHeight")){
-			loadmore();
-		}
-	}
-	// 게시글 로드 준비가 되었는지 여부
-	// 마지막 게시글 로드 시간과 비교하여 지정한 시간이 지났는지 확인
-	var isLoadReady = function(){
-		var now = new Date();
-		var diff = now.getTime() - globals.latestLoadTime.getTime();
-		if(diff >= defaults.loadDelay){
-			return true;
-		}
-		return false;
-	}
-	// 카풀 목록 출력
-	// data
-	//  카풀 게시글 목록 Json
-	var printCarpoolList = function(data){
-		if(data.length == 0)
-			return;
-		var addZero = function(n){
-			return n < 10 ? '0' + n : '' + n;
-		}
-		globals.pgn += data.length;
-		var liSet = "";
-		var prevYear = 0;
-		var prevMonth = 0;
-		var prevDate = 0;
-		for(var i in data){
-			var d = data[i];
-			var time = new Date(d.carpoolTime);
-			var formattedTime = addZero(time.getHours()) + ":" + addZero(time.getMinutes());
-			var isAddTimecut = true;
-			// 날짜
-			if(i == 0){
-				$("#listCarpool .time_cut").each(function(){
-					if($(this).data("year") == time.getYear() &&
-					   $(this).data("month") == time.getMonth() &&
-					   $(this).data("date") == time.getDate()){
-						isAddTimecut = false;
-						return false;
+/**
+*	브라우저에서 테스트
+*		KCP.deviceid의 값을 null이 아닌 임의의 값으로 둔다.
+*		angularjs 부트스트랩 콜백 이벤트를 deviceready 가 아닌 DOMContentLoaded 로 둔다.
+*/
+(function(window) {
+"use strict"
+
+// 카풀 서버와 디바이스 정보
+var KCP = {
+	domain:				"http://glda007.cafe24.com",	// 서버 URL
+	deviceid:			"a",									// device id for test
+	// deviceid:			null,									// device id
+	regid:				null,									// google gcm regid
+};
+
+// mobile 뒤로가기 버튼 막음
+document.addEventListener("backbutton", function (e){
+	e.preventDefault();
+}, false);
+
+// device 정보 획득 후 angularjs 부트스트랩
+document.addEventListener("DOMContentLoaded", function(){	// for test
+// document.addEventListener("deviceready", function(){
+
+	// 푸쉬 Receive / Regist Callback function - ANDROID
+	// onNotification***은 반드시 window의 멤버함수로 존재해야 함
+	window.onNotificationGCM = function(e){
+		switch(e.event){
+			// 안드로이드 디바이스의 registerID를 획득하는 event 중 registerd 일 경우 호출된다.
+			case 'registered':
+				KCP.regid = e.regid;
+			break;
+			// 안드로이드 디바이스에 푸시 메세지가 오면 호출된다.
+			case 'message':
+				//e.message = decodeURIComponent(e.message.replace(/\+/g, '%20'));
+				// 푸시 메세지가 왔을 때 앱이 실행되고 있을 경우
+				if (e.foreground){
+					alert(e.message);
+				}
+				// 푸시 메세지가 왔을 때 앱이 백그라운드로 실행되거나 실행되지 않을 경우
+				else {
+					// 푸시 메세지가 왔을 때 푸시를 선택하여 앱이 열렸을 경우
+					if(e.coldstart){
 					}
-				});
-			}else{
-				if(prevYear == time.getYear() &&
-				   prevMonth == time.getMonth() &&
-				   prevDate == time.getDate()){
-						isAddTimecut = false;
+					// 푸시 메세지가 왔을 때 앱이 백그라운드로 사용되고 있을 경우
+					else{
+					}
 				}
-			}
-			if(isAddTimecut){
-				var liTimecut = $("<li />", {
-					"class":	"timeline_hr timeline_bar time_cut",
-					"text":		time.getMonth()+1 + "/" + time.getDate(),
-					"data-year":time.getYear(),
-					"data-month":time.getMonth(),
-					"data-date":time.getDate()
-				});
-				liSet += liTimecut.prop("outerHTML");
-				prevYear = time.getYear();
-				prevMonth = time.getMonth();
-				prevDate = time.getDate();
-			}
-			// 게시글
-			var liPost = $("<li />", {
-				"class":	"post",
-				"html":		function(){
-					return "" +
-						"<div class='box_time'>" +
-							formattedTime +
-						"</div>" +
-						"<div class='box_post'>" +
-							"<input class='cpBoardId' type='hidden' value='"+d.cpBoardId+"'>" +
-							"<div class='"+(d.commentNums==0?"box_subject no_cmt":"box_subject")+"'>" +
-								"<span class='txt_dest'>"+d.arrivePoint+"</span>" +
-								"<span class='txt_subject'>"+d.contents+"</span>" +
-							"</div>" +
-							(d.commentNums>0?
-							"<div class='box_cmt_num'>" +
-								"<span class='ico ico_comment'></span>" +
-								"<span class='num_comments'>"+(d.commentNums>9?"9+":+d.commentNums)+"</span>" +
-							"</div>":"") +
-						"</div>" +
-						"<div class='box_status'>" +
-							"<div class='"+(d.numberOfPersons<=d.currentPersons?"ico_status full":"ico_status")+"'>" +
-						"</div>";
-				}
-			});
-			liSet += liPost.prop("outerHTML");
+				navigator.notification.alert(e.payload.title);
+			break;
+			// 푸시 메세지 처리에 에러가 발생하면 호출한다.
+			case 'error':
+			break;
+			// 알 수 없음
+			case 'default':
+			break;
 		}
-		$("#listCarpool").append(liSet);
 	}
-	// 덧글 출력
-	// comments
-	//  코멘트 정보 JSON
-	var printComments = function(comments){
-		$("#listComments").empty();
-		var liSet = "";
-		for(var i=0; i<comments.length; i++){
-			var li = $("<li />", {
-				"class": "row"
-			});
-			var spanComment = $("<div />", {
-				"class": "col_10 box_cmt_contents",
-				text: comments[i].comment
-			});
-			var spanUser = $("<div />", {
-				"class": "col_10 box_cmt_name",
-				text: comments[i].user.alias
-			});
-			if(comments[i].mine){
-				spanComment.addClass("mine");
-				spanUser.addClass("mine");
-			}
-			li.html(spanUser.prop("outerHTML")+spanComment.prop("outerHTML"));
-			liSet += li.prop("outerHTML");
+	
+	// 푸쉬 Receive / Regist Callback function - IOS
+	window.onNotificationAPN = function(event){
+		// 푸시 메세지에 alert 값이 있을 경우
+		if(event.alert){
+			navigator.notification.alert(event.alert);
 		}
-		$("#listComments").append(liSet);
+		// 푸시 메세지에 sound 값이 있을 경우
+		if(event.sound){
+			var snd = new Media(event.sound);
+			snd.play();
+		}
+		// 푸시 메세지에 bage 값이 있을 경우
+		if(event.badge){
+			window.plugins.pushNotification.setApplicationIconBadgeNumber(successHandler, errorHandler, event.badge);
+		}
 	}
-	// 상세보기 글 내용 출력
-	// data
-	//  게시글 정보 JSON
-	var printData = function(data){
-		var addZero = function(n){
-			return n < 10 ? '0' + n : '' + n;
-		}
-		var time = new Date(data.carpoolTime);
-		var formattedTime = addZero(time.getMonth()+1) + "-" + addZero(time.getDay()) + "\n" + addZero(time.getHours()) + ":" + addZero(time.getMinutes());
-		$("#detailArrivePoint").text(data.arrivePoint);
-		$("#detailStartPoint").text(data.startPoint);
-		$("#detailContents").text(data.contents);
-		$("#detailCarType").text(data.carType);
-		/* @TEST 카풀시간 제거 되었음. 수정 후 셀렉터 변경 */
-		//$("#detailCarpoolTime").text(formattedTime);
-		// 참여자 수
-		var curr = data.currentPersons;
-		var max = data.numberOfPersons;
-		var $attenders = $("#detailAttenders").empty();
-		for(var i=0; i<max; i++){
-			var icon = $("<i />", {
-				"class": "ico ico_user"
+
+	// 디바이스 ID 획득
+	if(KCP.deviceid == null){
+		KCP.deviceid = device.uuid;
+	}
+	
+	// 푸시 정보 획득
+	if(typeof device !== "undefined"){
+		if(device.platform.toUpperCase() == 'ANDROID'){
+			window.plugins.pushNotification.register(function(result){
+				console.log("result:" + result);
+			}, function(err){
+				console.log("error:" + err);
+			}, {
+				"senderID" : "60318613763",	// Google GCM 서비스에서 생성한 Project Number를 입력한다.
+				"ecb" : "onNotificationGCM"	// 디바이스로 푸시가 오면 onNotificationGCM 함수를 실행할 수 있도록 ecb(event callback)에 등록한다.
 			});
-			if(i < curr)
-				icon.addClass("active");
-			$attenders.append(icon);
-		}
-		// 지도 출력
-		var latlng = new daum.maps.LatLng(data.startLatitude, data.startLongitude);
-		globals.map.setCenter(latlng);
-		globals.marker.setPosition(latlng);
-		var geocoder = new daum.maps.services.Geocoder();
-		geocoder.coord2addr(latlng, function(status, result){
-			$("#carpoolAddr").text(result[0].fullName);
-		});
-	}
-	// 상세보기
-	var readmore = function(){
-		// 권한에 따라 버튼을 숨기고 감춤
-		var btnsh = function(permission){
-			var isWriter = permission.isWriter;
-			var isAttendant = permission.isAttendant;
-			var $btnDelete = $("#btnDelete").parent();
-			var $btnCancel = $("#btnCancel").parent();
-			var $btnCarpool = $("#btnAttend").parent();
-			var $btnModify = $("#btnModify").parent();
-			if(isWriter){
-				$btnDelete.show();
-				$btnModify.show();
-				$btnCancel.hide();
-				$btnCarpool.hide();
-			}else if(isAttendant){
-				$btnDelete.hide();
-				$btnModify.hide();
-				$btnCancel.show();
-				$btnCarpool.hide();
-			}else{
-				$btnDelete.hide();
-				$btnModify.hide();
-				$btnCancel.hide();
-				$btnCarpool.show();
-			}
-		}
-		// 글 정보와 내용 비동기 호출 완료시 내용 출력
-		$.ajax({
-			url: defaults.domain+"/carpoolboard/getBoard.do",
-			data: {
-				"cpBoardId": globals.currBoardId,
-				"userId": KCP.deviceid
-			},
-			type: "post",
-			success: function(response){
-				btnsh(response.permission);
-				printData(response.board);
-				printComments(response.comments);
-			}
-		});
-	}
-	// 리스트 -> 상세보기 전환
-	// isIgnoreAnimate
-	//  true: 애니메이션 생략, false: 애니메이션 효과
-	var listToDetail = function(isIgnoreAnimate){
-		if(isIgnoreAnimate){
-			$("#boardContent").css("right", "100%");
-			$("#detailContent").css("left", "0%");
-			$("body").css("overflow", "hidden");
 		}else{
-			$("#boardContent").animate({
-				"right": "100%"
-			});
-			$("#detailContent").animate({
-				"left": "0%"
-			});
-			$("body").css({
-				"overflow": "hidden"
+			// PushPlugin을 설치했다면 window.plugins.pushNotification.register를 이용해서 iOS 푸시 서비스를 등록한다.
+			window.plugins.pushNotification.register(function(result){
+				console.log("deviceToken:" + result);
+			}, function(err){
+				console.log("error:" + err);
+			}, {
+				"badge":"true", // 뱃지 기능을 사용한다.
+				"sound":"true", // 사운드를 사용한다.
+				"alert":"true", // alert를 사용한다.
+				"ecb": "onNotificationAPN" // 디바이스로 푸시가 오면 onNotificationAPN 함수를 실행할 수 있도록 ecb(event callback)에 등록한다.
 			});
 		}
 	}
-	// 상세보기 -> 리스트 전환
-	var detailToList = function(){
-		$("#boardContent").animate({
-			"right": "0%"
-		});
-		$("#detailContent").animate({
-			"left": "100%"
-		});
-		$("body").css({
-			"overflow": ""
-		});
+	
+	angular.bootstrap(document, ['kcp']);
+}, false);
+
+var module = angular.module("kcp", ["angularjs-datetime-picker"])
+.service("UtilService", function(){
+
+	// 10미만 정수를 받아 2자리 수로 변환하여 반환한다.
+	// 반환된 값은 문자열로 타입변경 된다.
+	// n: 정수
+	this.addZero = function(n){
+		return n < 10 ? '0' + n : '' + n;
 	}
-	// 서버에 카풀 참여 요청
-	var requestCarpoolAttend = function(){
-		$.ajax({
-			url: defaults.domain+"/carpoolboard/attend.do",
-			type: "post",
-			data: {
-				"cpBoardId": globals.currBoardId,
+
+	// ms를 날짜 형식으로 변환한다.
+	// ms: 밀리세컨드
+	this.ms2foramttedTime = function(ms){
+		var date = new Date(ms);
+		return date.getFullYear() + "-" + this.addZero(date.getMonth()+1) + "-" + this.addZero(date.getDate()) + " " + this.addZero(date.getHours()) + ":" + this.addZero(date.getMinutes());
+	}
+	
+	// 카풀 model에 formattedDate를 추가한다.
+	// arr: 카풀 목록
+	this.carpoolDataProc = function(arr){
+		var time = new Date(arr.carpoolTime);
+		arr.formattedTime = this.addZero(time.getHours()) + ":" + this.addZero(time.getMinutes());
+		arr.formattedDay = time.getMonth()+1 + "/" + time.getDate();
+		arr.formattedFullDay = time.getFullYear() + " " + arr.formattedDay;
+		return arr;
+	}
+})
+.service("MapService", function($rootScope, $q){
+
+	// 좌표 변환
+	var geocoder = new daum.maps.services.Geocoder();
+	// 지도 정보
+	this.map = {};
+	
+	// 지도 초기화
+	this.init = function(element, lat, lng){
+		if(typeof daum != "undefined"){
+			var startPoint = new daum.maps.LatLng(lat, lng);
+			var mapOption = {
+					center: startPoint,
+					level: 3
+			}
+			this.map.map = new daum.maps.Map(element, mapOption);
+			this.map.marker = new daum.maps.Marker({
+				position: startPoint
+			});
+			this.map.marker.setMap(this.map.map);
+			this.map.marker.setDraggable(true);
+		}
+	};
+	
+	// marker 이동
+	this.moveMarker = function(lat, lng){
+		var pos = new daum.maps.LatLng(lat, lng);
+		this.map.map.setCenter(pos);
+		this.map.marker.setPosition(pos);
+	}
+	
+	// 좌표 -> 주소 변환
+	// daum map api service
+	// return deferred
+	this.coord2addr = function(lat, lng){
+		var deferred = $q.defer();
+		geocoder.coord2addr(new daum.maps.LatLng(lat,lng), function(status, result){
+			deferred.resolve(result);
+		});
+		return deferred.promise;
+	}
+})
+.service("AjaxService", function($http, $q){
+	
+	// 비동기 통신 defer
+	// 에러시 상태코드, 성공 시 response 반환
+	var ajax = function(url, data){
+		var deferred = $q.defer();
+		$http({
+			url: url,
+			method: "post",
+			params: data
+		})
+		.success(function(data, status){
+			if(status === 200){
+				deferred.resolve(data);
+			}else{
+				deferred.reject(status);
+			}
+		})
+		.error(function(data, status){
+			deferred.reject(status);
+		});
+		return deferred.promise;
+	}
+
+	// 카풀 목록
+	// pgn: pgination
+	this.selectCarpoolList = function(pgn){
+		return ajax(
+			KCP.domain+"/carpoolboard/getList.do", {
+				"pageIndex": pgn,
+				"pageNumber": 3,
 				"userId": KCP.deviceid
-			},
-			success: function(response){
+			}
+		);
+	}
+	
+	// 카풀 상세 정보
+	// boardid: 카풀 게시글 ID
+	this.selectCarpoolDetail = function(boardid){
+		return ajax(
+			KCP.domain+"/carpoolboard/getBoard.do", {
+				"cpBoardId": boardid,
+				"userId": KCP.deviceid
+			}
+		);
+	}
+	
+	// 카풀 등록
+	// data: 카풀 정보, 데이터
+	this.insertCarpool = function(data){
+		data.userId = KCP.deviceid;
+		return ajax(
+			KCP.domain+"/carpoolboard/insertBoard.do",
+			data
+		);
+	}
+	// 카풀 수정
+	// data: 카풀 정보, 데이터
+	this.updateCarpool = function(data){
+		data.userId = KCP.deviceid;
+		return ajax(
+			KCP.domain+"/carpoolboard/updateBoard.do",
+			data
+		);
+	}
+	
+	// 카풀 삭제
+	// boardid: 카풀 게시글 ID
+	this.deleteCarpool = function(boardid){
+		return ajax(
+			KCP.domain+"/carpoolboard/deleteBoard.do", {
+				"cpBoardId": boardid,
+				"userId": KCP.deviceid
+			}
+		);
+	}
+	
+	// 내 카풀 목록
+	this.selectMyCarpoolList = function(){
+		return ajax(
+			KCP.domain+"/carpoolboard/getMyList.do", {
+				"userId": KCP.deviceid
+			}
+		);
+	}
+	
+	// 카풀 참여
+	// boardid: 카풀 게시글 ID
+	this.attendCarpool = function(boardid){
+		return ajax(
+			KCP.domain+"/carpoolboard/attend.do", {
+				"cpBoardId": boardid,
+				"userId": KCP.deviceid
+			}
+		);
+	}
+	
+	// 카풀 취소
+	// boardid: 카풀 게시글 ID
+	this.cancelCarpool = function(boardid){
+		return ajax(
+			KCP.domain+"/carpoolboard/cancel.do", {
+				"cpBoardId": boardid,
+				"userId": KCP.deviceid
+			}
+		);
+	}
+	
+	// 덧글 추가
+	// boardid: 카풀 게시글 ID
+	// contents: 덧글 내용
+	this.insertComment = function(boardid, contents){
+		return ajax(
+			KCP.domain+"/carpoolboard/addComment.do", {
+				"cpBoardId": boardid,
+				"comment": contents,
+				"userId": KCP.deviceid
+			}
+		);
+	}
+	
+	// 목적지 정보
+	this.selectDest = function(boardid, contents){
+		return ajax(
+			KCP.domain+"/destination/select.do", {
+				"userId": KCP.deviceid
+			}
+		);
+	}
+	
+	// 목적지 정보 입력/변경
+	// start: 출발지
+	// arrive: 도착지
+	// time: 카풀 시간
+	this.insertDest = function(start,arrive,time){
+		return ajax(
+			KCP.domain+"/destination/add.do", {
+				"startPoint": start,
+				"arrivePoint": arrive,
+				"carpoolTime": time,
+				"userId": KCP.deviceid,
+				"regId": KCP.regid
+			}
+		);
+	}
+	
+	// 목적지 정보 삭제
+	this.deleteDest = function(){
+		return ajax(
+			KCP.domain+"/destination/delete.do", {
+				"userId": KCP.deviceid
+			}
+		);
+	}
+	
+	// 메시지 목록
+	this.selectMessageList = function(){
+		return ajax(
+			KCP.domain+"/message/getMessage.do", {
+				"userId": KCP.deviceid
+			}
+		);
+	}
+	
+	// 매칭 정보
+	this.selectMatching = function(){
+		return ajax(
+			KCP.domain+"/destination/match.do", {
+				"userId": KCP.deviceid
+			}
+		);
+	}
+	
+	// 사용자 정보 등록 및 획득
+	this.insertUser = function(){
+		return ajax(
+			KCP.domain+"/carpoolboard/insertUser.do", {
+				"userId": KCP.deviceid
+			}
+		);
+	}
+})
+.controller("CarpoolCtrl", function($window, $scope, $http, UtilService, AjaxService, MapService){
+	var pgn = 0;			// 카풀 목록 pagination
+	$scope.menu = false;	// 메뉴 출력 여부
+	$scope.modal = "";		// 활성화 할 모달
+	$scope.isMypool = false;// 현재 카풀 목록이 내 카풀 목록인지 여부
+	$scope.models = {
+		carpools: [],			// 카풀 목록
+		dest: {					// 목적지 설정 정보
+			startPoint: "",
+			arrivePoint: "",
+			carpoolTime: "",
+			isExist: false
+		},
+		messages: [],			// 메시지 목록
+		matching: {				// 매칭 정보
+			message: "",
+			isMatching: false
+		},
+		user: {
+			alias: "",
+			aliasResourceIndex: 1
+		}
+	}
+	
+	// 카풀 로드
+	$scope.loadmore = function(){
+		AjaxService.selectCarpoolList(pgn).then(
+			function(response){
+				if(response.lists.length > 0){
+					pgn += response.lists.length;
+					if($scope.isMypool){
+						$scope.isMypool = false;
+						$scope.models.carpools = [];
+					}
+					for(var i in response.lists){
+						UtilService.carpoolDataProc(response.lists[i]);
+					}
+					$scope.models.carpools.push.apply($scope.models.carpools, response.lists);
+					if($scope.models.carpools.length == response.lists.length){
+						$scope.currentDate = $scope.models.carpools[0].formattedFullDay;
+					}
+				}
+			}
+		);
+	}
+	
+	// 상세보기
+	$scope.readmore = function($event, i){
+		AjaxService.selectCarpoolDetail($scope.models.carpools[i].cpBoardId).then(
+			function(response){
+				$scope.models.carpools[i] = UtilService.carpoolDataProc(response.board);
+				$scope.models.carpools[i].comments = response.comments;
+			}
+		);
+	}
+	
+	// 내 카풀 로드
+	// pagination과 카풀 목록 model에 덮어 쓴다.
+	$scope.loadMyCarpools = function(){
+		AjaxService.selectMyCarpoolList().then(
+			function(response){
+				if(!response.isEmpty){
+					console.log(response);
+					pgn = 0;
+					$scope.isMypool = true;
+					for(var i in response.lists){
+						UtilService.carpoolDataProc(response.lists[i]);
+					}
+					$scope.models.carpools = response.lists;
+				}else{
+					alert("내가 포함된 카풀이 없어요!");
+				}
+			}
+		);
+	}
+	
+	// 카풀 참여
+	$scope.requestCarpoolAttend = function(i){
+		AjaxService.attendCarpool($scope.models.carpools[i].cpBoardId).then(
+			function(response){
 				if(response.res){
-					var nCurr = response.currentPersons;
-					$("#btnAttend").parent().hide();
-					$("#btnCancel").parent().show();
-					$("#detailAttenders .active").removeClass("active");
-					$("#detailAttenders .ico_user:lt("+nCurr+")").addClass("active");
+					$scope.models.carpools[i].currentPersons = response.currentPersons;
+					$scope.models.carpools[i].attend = true;
+					alert("해당 카풀에 참여했습니다!");
 				}else{
 					alert("더 이상 참여할 수 없습니다.");
 				}
 			},
-			error: function(){
+			function(status){
 				alert("참여할 수 없습니다.");
 			}
-		});
-	}
-	// 서버에 카풀 취소 요청
-	var requestCarpoolCancel = function(){
-		$.ajax({
-			url: defaults.domain+"/carpoolboard/cancel.do",
-			type: "post",
-			data: {
-				"cpBoardId": globals.currBoardId,
-				"userId": KCP.deviceid
-			},
-			success: function(response){
-				if(response.res){
-					var nCurr = response.currentPersons;
-					$("#btnCancel").parent().hide();
-					$("#btnAttend").parent().show();
-					$("#detailAttenders .active").removeClass("active");
-					$("#detailAttenders .ico_user:lt("+nCurr+")").addClass("active");
-				}
-			},
-			error: function(){
-			}
-		});
-	}
-	// 카풀 수정 페이지로 이동
-	var redirectToCarpoolModify = function(){
-		// 카풀 목록, 보고있는 내용, 스크롤 위치 저장 후 redirect
-		var url = defaults.urlCarpoolAdd+"?modifyId="+escape(globals.currBoardId);
-		document.location.hash = "#"+globals.currBoardId;
-		storageBoardState();
-		window.location.href = url;
-	}
-	// 카풀 등록 페이지로 이동
-	var redirectToCarpoolAdd = function(){
-		if(!(globals.userDestTime || globals.userDestStart || globals.userDestArrive))
-			return false;
-		var url = defaults.urlCarpoolAdd+"?carpoolTime="+escape(globals.userDestTime)
-										+"&startPoint="+escape(globals.userDestStart)
-										+"&arrivePoint="+escape(globals.userDestArrive);
-		window.location.href = url;
-	}
-	// 서버에 목적지 설정 요청
-	var requestSetDestination = function(element){
-		var isOn = $("#cbAlarmToggle").is(":checked");
-		if(isOn){
-			$.ajax({
-				url: defaults.domain+"/destination/add.do",
-				type: "post",
-				data: {
-					userId: KCP.deviceid,
-					regId: KCP.regid,
-					startPoint: $("#setSrc").val(),
-					arrivePoint: $("#setDest").val(),
-					carpoolTime: $("#setTime").val()
-				}
-			});
-		}else{
-			$.ajax({
-				url: defaults.domain+"/destination/delete.do",
-				type: "post",
-				data: {
-					userId: KCP.deviceid
-				}
-			});
-		}
-		$("#modalDestSetup").parent(".curtain").click();
-	}
-	// 카풀 삭제
-	var deleteCarpool = function(){
-		$.ajax({
-			url: defaults.domain+"/carpoolboard/deleteBoard.do",
-			type: "post",
-			data: {
-				"cpBoardId": globals.currBoardId,
-				"userId": KCP.deviceid
-			},
-			success: function(response){
-				if(response.res){
-					window.location.href = defaults.urlCarpoolList;
-				}else{
-					alert("삭제 실패!");
-				}
-			},
-			error: function(){
-			}
-		});
-	}
-	// 덧글 등록 및 갱신된 덧글 가져오기
-	var postComment = function(){
-		// 등록정보 획득
-		var comment = $("#inpCmt").val();
-		$("#inpCmt").val("");
-		// 예외
-		if(comment.length == 0){
-			alert("내용을 입력하세요.");
-			return false;
-		}
-		// 등록요청
-		$.ajax({
-			url: defaults.domain+"/carpoolboard/addComment.do",
-			type: "post",
-			data: {
-				"cpBoardId": globals.currBoardId,
-				"userId": KCP.deviceid,
-				"comment": comment
-			},
-			success: function(response){
-				console.log(response);
-				printComments(response.commentList);
-			},
-			error: function(){
-			}
-		});
-	}
-	// 내 카풀 보기
-	var loadMyCarpool = function(){
-		globals.isActiveLoadmore = false;
-		// 내 카풀보기와 모든 카풀보기의 바꾸고, 링크도 재설정
-		var $bmc = $("#btnMyCarpool");
-		var $bac = $("#btnAllCarpool");
-		var temp = { "id": $bmc.attr("id"), "class": $bmc.attr("class")}
-		$bmc.find("a").attr("href", defaults.urlCarpoolList);
-		$bmc.attr("id", $bac.attr("id")).attr("class", $bac.attr("class"));
-		$bac.attr("id", temp.id).attr("class", temp.class);
-		// 정보요청 및 출력
-		$.ajax({
-			url: defaults.domain+"/carpoolboard/getMyList.do",
-			type: "post",
-			data: {
-				"userId": KCP.deviceid
-			},
-			success: function(response){
-				if(!response.isEmpty){
-					// 목록 비움
-					$("#listCarpool").empty();
-					// 로드한 게시글 붙임
-					globals.isLoading = false;
-					globals.latestLoadTime = new Date();
-					globals.pgn += $(response).find(".box_post").length;
-					$("#listCarpool").append(response);
-				}
-			},
-			error: function(){
-			}
-		});
-	}
-	// 목적지 정보 가져오기
-	var loadDestination = function(){
-		var addZero = function(n){
-			return n < 10 ? '0' + n : '' + n;
-		}
-		$.ajax({
-			url: defaults.domain+"/destination/select.do",
-			type: "post",
-			data: {
-				"userId": KCP.deviceid
-			},
-			success: function(response){
-				if(response.res){
-					// 목적지설정 정보 저장
-					var date = new Date(response.destination.carpoolTime);
-					var dateFormatted = date.getFullYear() + "-" + addZero(date.getMonth()+1) + "-" + addZero(date.getDate()) + " " + addZero(date.getHours()) + ":" + addZero(date.getMinutes());
-					globals.userDestTime = dateFormatted;
-					globals.userDestStart = response.destination.startPoint;
-					globals.userDestArrive = response.destination.arrivePoint;
-					// 출력
-					$("#setSrc").val(response.destination.startPoint);
-					$("#setDest").val(response.destination.arrivePoint);
-					$("#setTime").val(dateFormatted);
-					$("#cbAlarmToggle").prop("checked", true);
-				}else{
-					$("#cbAlarmToggle").prop("checked", false);
-				}
-			},
-			error: function(){
-			}
-		});
-		// 목적지 설정 탭을 시작으로
-		$("#tabDestSetup").click();
-	}
-	// 매칭 결과 가져오기
-	var loadMatchingResult = function(){
-		$.ajax({
-			url: defaults.domain+"/destination/match.do",
-			type: "post",
-			data: {
-				"userId": KCP.deviceid
-			},
-			success: function(response){
-				$("#matchingResult").text(response.message);
-				if(response.isMatching)
-					$("#btnMRCC").show();
-				else
-					$("#btnMRCC").hide();
-			}
-		});
-	}
-	// 메시지 목록 가져오기
-	var loadMessageList = function(){
-		$.ajax({
-			url: defaults.domain+"/message/getMessage.do",
-			type: "post",
-			data: {
-				"userId": KCP.deviceid
-			},
-			success: function(response){
-				var $list = $("#listMessage").empty();
-				var liSet = "";
-				for(var i=0; i<response.messageList.length; i++){
-					var li = $("<li />", {
-						html: response.messageList[i].contents
-					});
-					liSet += li.prop("outerHTML");
-				}
-				$list.append(liSet);
-			}
-		});
-	}
-	// 카풀목록 불러오기
-	// 내 카풀 보기 or 모든 카풀 보기 or 수정화면에서 돌아가기인지 판단
-	var loadCarpools = function(){
-		if(location.hash.length > 1){
-			globals.isActiveLoadmore = false;
-			unstorageBoardState();
-			globals.isActiveLoadmore = true;
-			location.hash = "";
-		}else{
-			if(globals.isMyCarpoolMode){
-				loadMyCarpool();
-			}else{
-				loadmore();
-			}
-		}
-	}
-	// daum map 초기화
-	var initDaumMap = function(){
-		var startPoint = new daum.maps.LatLng(36.1425305, 128.394327);
-		var mapContainer = document.getElementById("map"),
-			mapOption = { 
-				center: startPoint,
-				draggable: false,
-				level: 3
-			};
-		globals.map = new daum.maps.Map(mapContainer, mapOption);
-		globals.marker = new daum.maps.Marker({
-			position: startPoint
-		});
-		globals.marker.setMap(globals.map);
-		globals.marker.setDraggable(false);
-	}
-	// 현재 페이지 상태 저장
-	var storageBoardState = function(){
-		localStorage.setItem("cachedCarpoolList", $("#listCarpool").prop("innerHTML"));
-		localStorage.setItem("cachedCarpoolScrollTop", $("#boxListCarpool").scrollTop());
-		localStorage.setItem("cachedPgn", globals.pgn);
-		localStorage.setItem("cachedCurrBoardId", globals.currBoardId);
-	}
-	// 저장된 페이지 상태 출력
-	var unstorageBoardState = function(){
-		if(typeof localStorage.getItem("cachedCarpoolList") != "undefined"){
-			$("#listCarpool").empty().append(localStorage.getItem("cachedCarpoolList"));
-			$("#boxListCarpool").scrollTop(localStorage.getItem("cachedCarpoolScrollTop"));
-			globals.pgn = parseInt(localStorage.getItem("cachedPgn"));
-			globals.currBoardId = localStorage.getItem("cachedCurrBoardId");
-			// 사용한 데이터 파기
-			localStorage.removeItem("cachedCarpoolList");
-			localStorage.removeItem("cachedCarpoolScrollTop");
-			localStorage.removeItem("cachedPgn");
-			localStorage.removeItem("cachedCurrBoardId");
-			// 페이지 이동
-			listToDetail(true);
-			readmore();
-		}
-	}
-	// DOM 정보 설정
-	var setDOMInfo = function(){
-		var $contDate = $("#contDate");
-		globals.nDateBottom = $contDate.offset().top + $contDate.height();
+		);
 	}
 	
-	/* event binding */
-	// 메세지 모달 탭 클릭
-	$("#tabDestSetup, #tabMatching").on("click", function(e){
-		if($(this).attr("id") == "tabMatching")
-			loadMatchingResult();
-		messageModalTabToggle(e);
-	});
-	// 페이지 스크롤
-	$("#boxListCarpool").scroll(function(){
-		refreshContDate();
-		loadmoreWhenScrollBottom();
-	});
-	// 메뉴-알람 클릭
-	$("#btnAlarm").on("click", function(){
-		toggleAlarm(this);
-	})
-	// 게시글 클릭
-	$("#listCarpool").on("click", ".box_post", function(){
-		globals.currBoardId = $(this).find(".cpBoardId").val();
-		readmore();
-		listToDetail(false);
-	});
-	// 상세보기-돌아가기 클릭
-	$("#btnBack").on("click", function(){
-		detailToList();
-	});
-	// 삭제 클릭
-	$("#btnDelete").on("click", function(){
-		deleteCarpool();
-	});
-	// 카풀하기 클릭
-	$("#btnAttend").on("click", function(){
-		requestCarpoolAttend();
-	});
-	// 카풀취소 클릭
-	$("#btnCancel").on("click", function(){
-		requestCarpoolCancel();
-	});
-	// 수정 클릭
-	$("#btnModify").on("click", function(){
-		redirectToCarpoolModify();
-	});
-	// 덧글 등록 버튼 클릭
-	$("#btnCmt").on("click", function(){
-		postComment();
-	});
-	// location.search 파싱 및 저장
+	// 카풀 취소
+	$scope.requestCarpoolCancel = function(i){
+		AjaxService.cancelCarpool($scope.models.carpools[i].cpBoardId).then(
+			function(response){
+				if(response.res){
+					$scope.models.carpools[i].currentPersons = response.currentPersons;
+					$scope.models.carpools[i].attend = false;
+					alert("취소되었습니다.");
+				}
+			}
+		);
+	}
+	
+	// 덧글 등록
+	// contents: 덧글 내용
+	$scope.submitComment = function(i, contents){
+		if(contents.length > 0){
+			AjaxService.insertComment($scope.models.carpools[i].cpBoardId, contents).then(
+				function(response){
+					$scope.models.carpools[i].comments = response.commentList;	// model 갱신
+				}
+			);
+		}
+	}
+	
+	// 목적지 정보 로드
+	$scope.loadDest = function(){
+		AjaxService.selectDest().then(
+			function(response){
+				if(response.res){
+					angular.extend($scope.models.dest, response.destination);
+					$scope.models.dest.carpoolTime = UtilService.ms2foramttedTime(response.destination.carpoolTime);
+					$scope.models.dest.isExist = true;
+				}
+			}
+		);
+	}
+	
+	// 목적지 정보 수정/입력
+	$scope.saveDest = function(){
+		AjaxService.insertDest(
+			$scope.models.dest.startPoint,
+			$scope.models.dest.arrivePoint,
+			$scope.models.dest.carpoolTime
+			
+		).then(
+			function(response){
+				$scope.destForm.$setPristine();		// 변경 내역 초기화
+				$scope.models.dest.isExist = true;
+			}
+		);
+	}
+	
+	// 목적지 정보 삭제
+	$scope.deleteDest = function(){
+		AjaxService.deleteDest().then(
+			function(response){
+				for(var key in $scope.models.dest){	// model 초기화
+					if(typeof $scope.models.dest[key] == "string"){
+						$scope.models.dest[key] = "";
+					}else if(typeof $scope.models.dest[key] == "boolean"){
+						$scope.models.dest[key] = false;
+					}
+				}
+			}
+		);
+	}
+	
+	// 메시지 목록 로드
+	$scope.loadMessages = function(){
+		AjaxService.selectMessageList().then(
+			function(response){
+				$scope.models.messages = response.messageList;
+			}
+		);
+	}
+	
+	// 매칭 정보 로드
+	$scope.selectMatchingResult = function(){
+		AjaxService.selectMatching().then(
+			function(response){
+				angular.extend($scope.models.matching, response);
+			}
+		);
+	}
+	
+	// 사용자 정보 로드
+	$scope.loadUser = function(){
+		AjaxService.insertUser().then(
+			function(response){
+				angular.extend($scope.models.user, response.user);
+			}
+		);
+	}
+	
+	// 상세 보기 toggle
+	$scope.toggleDetail = function(i){
+		if($scope.cidx == i)
+			$scope.cidx = -1;
+		else{
+			$scope.cidx = i;
+			MapService.moveMarker($scope.models.carpools[i].startLatitude, $scope.models.carpools[i].startLongitude);
+		}
+	}
+	
+	// 글쓰기 페이지로 이동
+	// param: 함께 보낼 정보
+	$scope.writepage = function(param){
+		var url = "./carpool_add.html";
+		if(typeof param !== "undefined"){
+			url += param
+		}
+		$window.location.href = url;
+	}
+	
+	// 목적지 정보와 함께 글쓰기 페이지로 이동
+	$scope.createCarpool = function(){
+		var param = "?carpoolTime=" + escape($scope.models.dest.carpoolTime)
+				+ "&startPoint=" + escape($scope.models.dest.startPoint)
+				+ "&arrivePoint=" + escape($scope.models.dest.arrivePoint);
+		$scope.writepage(param);
+	}
+	
+	// 카풀 수정/삭제 페이지로 이동
+	$scope.modify = function(i){
+		window.location.href = "carpool_add.html?boardid=" + $scope.models.carpools[i].cpBoardId;
+	}
+	
+	// 홈으로, 새로고침을 한 것처럼 카풀을 새로 로드한다.
+	$scope.home = function(){
+		pgn = 0;
+		$scope.models.carpools = [];
+		$scope.isMypool = false;
+		$scope.loadmore();
+	}
+	
+	// initialize
+	$scope.loadDest();	// 로드 직후 카풀 만들기 사용을 위해서..
+	$scope.loadUser();// 사용자 등록 및 정보 획득
+})
+.controller("WriteFormCtrl", function($scope, AjaxService, UtilService, MapService){
+
+	$scope.MapService = MapService;
+	$scope.modal = "";
+	
+	// input에 대한 model
+	$scope.formData = {
+		numberOfPersons: 4,
+		arrivePoint: "",
+		startPoint: "",
+		carType: "",
+		carpoolTime: "",
+		startLatitude: "",
+		startLongitude: "",
+		comment: ""
+	};
+	// 수정모드 여부
+	$scope.isModifyMode = false;
+	// location.search 파싱 결과
+	$scope.queryString = {};
+	
+	// 카풀 정보 로드
+	$scope.loadCarpool = function(){
+		AjaxService.selectCarpoolDetail($scope.queryString.boardid).then(
+			function(response){
+				$scope.formData = UtilService.carpoolDataProc(response.board);
+				$scope.formData.carpoolTime = UtilService.ms2foramttedTime($scope.formData.carpoolTime);
+				$scope.setStartPosAddr($scope.formData.startLatitude, $scope.formData.startLongitude);
+				MapService.moveMarker($scope.formData.startLatitude, $scope.formData.startLongitude);	// 지도 marker 이동
+			}
+		);
+	}
+	
+	// 카풀 등록
+	$scope.addCarpool = function(){
+		for(var key in $scope.formData){
+			if(key == "comment")
+				continue;
+			if($scope.formData[key] != null && $scope.formData[key].length == 0){
+				alert("필수 항목이 비어있습니다!");
+				return false;
+			}
+		}
+		
+		AjaxService.insertCarpool($scope.formData).then(
+			function(response){
+				$scope.goToList();
+			}
+		);
+	}
+	
+	// 카풀 수정
+	$scope.modifyCarpool = function(){
+		for(var key in $scope.formData){
+			if(key == "comment")
+				continue;
+			if($scope.formData[key] != null && $scope.formData[key].length == 0){
+				alert("필수 항목이 비어있습니다!");
+				return false;
+			}
+		}
+		
+		AjaxService.updateCarpool($scope.formData).then(
+			function(response){
+				$scope.goToList();
+			}
+		);
+	}
+	
+	// 카풀 삭제
+	$scope.deleteCarpool = function(){
+		var answer = confirm("정말 삭제합니까?");
+		if(answer){
+			AjaxService.deleteCarpool($scope.queryString.boardid).then(
+				function(response){
+					$scope.goToList();
+				}
+			);
+		}
+	}
+	
+	// 카풀 목록 페이지로 이동
+	$scope.goToList = function(){
+		window.location.href = "./carpool.html";
+	}
+	
+	// 지도 설정 완료
+	$scope.setCarpoolPos = function(){
+		$scope.formData.startLatitude = MapService.map.marker.getPosition().getLat();
+		$scope.formData.startLongitude = MapService.map.marker.getPosition().getLng();
+		$scope.setStartPosAddr($scope.formData.startLatitude, $scope.formData.startLongitude);
+	}
+	
+	// model에 변환된 주소값을 저장한다.
+	$scope.setStartPosAddr = function(lat, lng){
+		MapService.coord2addr(lat, lng).then(
+			function(response){
+				$scope.formData.startPosAddr = response[0].fullName;
+			}
+		);
+	}
+	
+	// location.search 파싱 후 저장
 	var parseSearch = function(){
-		// 파싱
 		var uri = location.search;
 		var queryString = {};
 		uri.replace(
 			new RegExp("([^?=&]+)(=([^&]*))?", "g"),
-			function($0, $1, $2, $3) { queryString[$1] = $3}
+			function($0, $1, $2, $3) { queryString[$1] = unescape($3)}
 		);
-		// 저장
-		if(queryString.my == 1){
-			globals.isMyCarpoolMode = true;
+		$scope.queryString = queryString;
+	}
+	
+	// initialize
+	// location.search 파싱 후
+	// 카풀 수정 요청이라면 카풀정보를 요청, 출력한다.
+	parseSearch();
+	if(typeof $scope.queryString.boardid !== "undefined"){
+		$scope.isModifyMode = true;
+		$scope.loadCarpool();
+	}
+	// '카풀 만들기'를 통해 넘어온 경우라면 form model을 url parameter로 대체한다.
+	else if(typeof $scope.queryString.carpoolTime != "undefined"){
+		angular.extend($scope.formData, $scope.queryString);
+	}
+})
+.directive("map", function($compile, MapService){
+	return {
+		link: function(scope, element, attrs){
+			MapService.init(element[0], 36.1425305, 128.394327);
 		}
 	}
-	// 알람 토글 체크박스 클릭
-	$("#cbAlarmToggle").on("click", function(){
-		requestSetDestination();
-	});
-	// 매칭 결과 - 카풀만들기 버튼 클릭
-	$("#btnMRCC").on("click", function(){
-		redirectToCarpoolAdd();
-	});
-	// 페이지 리사이즈
-	$(window).on("resize", function(){
-		setDOMInfo();
-	});
-	
-	/* initialize */
-	// 시작시 목적지설정 탭 클릭
-	$("#tabDestSetup").click();
-	// DateTimePicker
-	$("#dtBox").DateTimePicker({
-		formatHumanDate: function(date){
-			return "(" + date.dayShort + ") " + date.yyyy + "-" + date.month + "-" + date.dd;
-		},
-		dateTimeFormat: "yyyy-MM-dd HH:mm:ss",
-		titleContentDateTime: "",
-		setButtonContent: "설정",
-		buttonsToDisplay: ["SetButton"],
-		fullMonthNames: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
-		shortMonthNames: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
-		shortDayNames: ["일", "월", "화", "수", "목", "금", "토"]
-	});
-	// modal, listscroll, loading
-	$("#listScroll").listscroll({
-		"margin": 30
-	});
-	$("#btnMessage").modal({
-		"target": "#modalMessage",
-		"onPreOpenModal": loadMessageList,
-	});
-	$("#btnDest").modal({
-		"target": "#modalDestination",
-		"onPreOpenModal": loadDestination
-	});
-	/*
-		@TEST 로딩 보류
-	$("#contBoardBottom").loading({
-		"onPreShow": function(){
-			$("#contBoardBottom").show();
+})
+.directive("mapcontainer", function($compile, MapService){
+	var contmap = document.querySelector("#carpoolmap");
+	return {
+		link: function(scope, element, attrs){
+			if(scope.$parent.cidx == scope.$index){
+				element.append(contmap);
+				MapService.map.map.relayout();
+				MapService.map.marker.setPosition(MapService.map.map.getCenter());
+			}
 		}
-	});
-	*/
-	// daum map api
-	initDaumMap();
-	// 파라미터 정보 저장
-	parseSearch();
-	// 카풀목록 출력
-	loadCarpools();
-	// DOM 정보 저장
-	setDOMInfo();
-	
-})(jQuery);
-}).call(this);
+	}
+})
+.directive("listscroll", function($document){
+	return {
+		link: function(scope, element, attrs){
+			var callback = function(){
+				var timebars = element[0].getElementsByClassName("box_timebar");
+				var prev = timebars[0];
+				for(var i=1; i<timebars.length; i++){
+					if(timebars[i].offsetTop > element[0].scrollTop)
+						break;
+					prev = timebars[i];
+				}
+				scope.currentDate = prev.dataset.date;
+			}
+			element.bind("scroll", function(){
+				callback();
+				scope.$apply();
+			});
+		}
+	}
+});
+
+})(window);
