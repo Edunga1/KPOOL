@@ -9,8 +9,8 @@
 // 카풀 서버와 디바이스 정보
 var KCP = {
 	domain:				"http://glda007.cafe24.com",	// 서버 URL
-	deviceid:			"a",									// device id for test
-	// deviceid:			null,									// device id
+	// deviceid:			"a",									// device id for test
+	deviceid:			null,									// device id
 	regid:				null,									// google gcm regid
 };
 
@@ -20,8 +20,8 @@ document.addEventListener("backbutton", function (e){
 }, false);
 
 // device 정보 획득 후 angularjs 부트스트랩
-document.addEventListener("DOMContentLoaded", function(){	// for test
-// document.addEventListener("deviceready", function(){
+// document.addEventListener("DOMContentLoaded", function(){	// for test
+document.addEventListener("deviceready", function(){
 
 	// 푸쉬 Receive / Regist Callback function - ANDROID
 	// onNotification***은 반드시 window의 멤버함수로 존재해야 함
