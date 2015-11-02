@@ -126,9 +126,6 @@ SELECT
          FROM Carpoolboard as cp
 		WHERE
 			cpBoardId = #{cpBoardId}
-				AND
-			 TIMESTAMP(Now()- INTERVAL 1 DAY) < carpoolTime 
-        	 ORDER BY carpoolTime 
 	]]>				
 	</select>
 
