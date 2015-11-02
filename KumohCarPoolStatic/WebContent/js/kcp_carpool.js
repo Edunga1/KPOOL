@@ -9,8 +9,8 @@
 // 카풀 서버와 디바이스 정보
 var KCP = {
 	domain:				"http://localhost:8080/KumohCarPool",	// 서버 URL
-	// deviceid:			"a",									// device id for test
-	deviceid:			null,									// device id
+	deviceid:			"a",									// device id for test
+	// deviceid:			null,									// device id
 	regid:				null,									// google gcm regid
 };
 
@@ -20,8 +20,8 @@ document.addEventListener("backbutton", function (e){
 }, false);
 
 // device 정보 획득 후 angularjs 부트스트랩
-// document.addEventListener("DOMContentLoaded", function(){	// for test
-document.addEventListener("deviceready", function(){
+document.addEventListener("DOMContentLoaded", function(){	// for test
+// document.addEventListener("deviceready", function(){
 
 	// 푸쉬 Receive / Regist Callback function - ANDROID
 	// onNotification***은 반드시 window의 멤버함수로 존재해야 함
@@ -501,8 +501,19 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 			
 		).then(
 			function(response){
-				$scope.destForm.$setPristine();		// 변경 내역 초기화
-				$scope.models.dest.isExist = true;
+				if(response.res){
+					$scope.destForm.$setPristine();		// 변경 내역 초기화
+					$scope.models.dest.isExist = true;
+				}else{
+					$scope.models.dest.startPoint = "";
+					$scope.models.dest.arrivePoint = "";
+					$scope.models.dest.carpoolTime = "";
+				}
+			},
+			function(response){
+				$scope.models.dest.startPoint = "";
+				$scope.models.dest.arrivePoint = "";
+				$scope.models.dest.carpoolTime = "";
 			}
 		);
 	}
