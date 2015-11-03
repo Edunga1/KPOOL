@@ -478,6 +478,7 @@ input, textarea, select {
 .snb {
 	position: fixed;
 	top: 0;
+	left: 0;
 	z-index: 10;
 	width: 100%;
 	height: 100%;
@@ -499,20 +500,19 @@ input, textarea, select {
 }
 .box_profile {
 	padding: 10px 0;
-	height: 100px;
-	max-height: 15%;
+	height: 10%;
 }
 .box_imgc {
 	overflow: hidden;
+	height: 100%;
+}
+.box_imgc>img {
 	height: 100%;
 	border-radius: 50%;
 	-ms-border-radius: 50%;
 	-webkit-border-radius: 50%;
 	-o-border-radius: 50%;
 	-moz-border-radius: 50%;
-}
-.box_imgc>img {
-	height: 100%;
 }
 .snb .box_alias {
 	width: 100%;
