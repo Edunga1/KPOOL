@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width">
 <title>Insert title here</title>
 <!-- CSS import -->
-<link rel="stylesheet" type="text/css" href="./css/lib/angularjs-datetime-picker.css">
+<link rel="stylesheet" type="text/css" href="./css/lib/angular-datepicker.css">
 <link rel="stylesheet" type="text/css" href="./css/font-icon.css">
 <link rel="stylesheet" type="text/css" href="./css/kcp_common.css">
 </head>
@@ -24,7 +24,7 @@
 		</div>
 		<div class="row boundary">
 			<div class="col_10">
-				<input class="u left" type="text" name="carpoolTime" ng-model="formData.carpoolTime" datetime-picker date-format="yyyy-MM-dd HH:mm" readonly>
+				<input class="u left" type="text" name="carpoolTime" ng-model="formData.carpoolTime" date-time  auto-close="true" readonly>
 			</div>
 		</div>
 		<div class="row">
@@ -118,7 +118,7 @@
 <script src="./cordova.js"></script>
 <script src="./js/lib/angular.min.js"></script>
 <script type="text/javascript" src="http://apis.daum.net/maps/maps3.js?apikey=fc0c5af4de65a88b6a708e9855ff9fe1&libraries=services"></script>
-<script src="./js/lib/angularjs-datetime-picker.min.js"></script>
+<script src="./js/lib/angular-datepicker.js"></script>
 <script src="./js/kcp_carpool.js"></script>
 </body>
 </html>
