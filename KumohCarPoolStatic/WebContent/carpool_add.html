@@ -83,7 +83,7 @@
 	</div>
 	<div class="cont_forms_menu">
 		<input class="btn_blank fgw" type="button" value="취소" ng-click="goToList()">
-		<input class="btn_blank fgw" type="button" value="삭제" ng-click="deleteCarpool()">
+		<input class="btn_blank fgw" type="button" value="삭제" ng-show="isModifyMode" ng-click="deleteCarpool()">
 		<input class="btn_blank fgw" type="submit" value="수정" ng-show="isModifyMode" ng-click="modifyCarpool()">
 		<input class="btn_blank fgw" type="submit" value="등록" ng-hide="isModifyMode" ng-click="addCarpool()">
 	</div>
