@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width">
 <title>Insert title here</title>
 <!-- CSS import -->
-<link rel="stylesheet" type="text/css" href="./css/lib/angularjs-datetime-picker.css">
+<link rel="stylesheet" type="text/css" href="./css/lib/angular-datepicker.css">
 <link rel="stylesheet" type="text/css" href="./css/font-icon.css">
 <link rel="stylesheet" type="text/css" href="./css/kcp_common.css">
 </head>
@@ -24,8 +24,8 @@
 <nav class="snb" ng-show="menu" ng-click="menu = !menu">
 	<div class="box_menu" ng-click="$event.stopPropagation()">
 		<div class="row box_profile bgp">
-			<div class="col_4">
-				<div class="box_imgc vhc">
+			<div class="col_4 c">
+				<div class="box_imgc">
 					<img ng-src="./img/pokemon/{{models.user.aliasResourceIndex}}.png">
 				</div>
 			</div>
@@ -35,40 +35,40 @@
 		</div>
 		<ul class="snb_list_menu fg5">
 			<li class="row x14" ng-click="writepage()">
-				<div class="col_4 c">
-					<i class="ico_pen x2 vc"></i>
+				<div class="col_4">
+					<i class="ico_pen x2 vhc"></i>
 				</div>
 				<div class="col_6">
 					<div class="vc">글쓰기</div>
 				</div>
 			</li>
 			<li class="row x14" ng-click="loadMessages(); modal = 'msg'; menu = !menu">
-				<div class="col_4 c">
-					<i class="ico_letter x2 vc"></i>
+				<div class="col_4">
+					<i class="ico_letter x2 vhc"></i>
 				</div>
 				<div class="col_6">
 					<div class="vc">메시지</div>
 				</div>
 			</li>
 			<li class="row x14" ng-click="loadDest(); modal = 'dest'; menu = !menu">
-				<div class="col_4 c">
-					<i class="ico_map x2 vc"></i>
+				<div class="col_4">
+					<i class="ico_map x2 vhc"></i>
 				</div>
 				<div class="col_6">
 					<div class="vc">목적지</div>
 				</div>
 			</li>
 			<li class="row x14" ng-click="loadMyCarpools(); menu = !menu">
-				<div class="col_4 c">
-					<i class="ico_user x2 vc"></i>
+				<div class="col_4">
+					<i class="ico_user x2 vhc"></i>
 				</div>
 				<div class="col_6">
 					<div class="vc">내 카풀</div>
 				</div>
 			</li>
 			<li class="row x14" ng-click="selectMatchingResult(); modal = 'match'; menu = !menu">
-				<div class="col_4 c">
-					<i class="ico_matching x2 vc"></i>
+				<div class="col_4">
+					<i class="ico_matching x2 vhc"></i>
 				</div>
 				<div class="col_6">
 					<div class="vc">사용자 매칭</div>
@@ -80,12 +80,12 @@
 <!-- 카풀 목록 부분 -->
 <article class="cont_board">
 	<div id="cplist" class="cont_board_scroll" ng-init="loadmore()" listscroll>
-		<div id="carpoolmap" ng-show="cidx >= 0" map></div>
+		<div id="carpoolmap" ng-show="cidx >= 0" map map-draggable="false"></div>
 		<div class="box_timebar" ng-repeat-start="c in models.carpools" data-date="{{c.formattedFullDay}}" ng-show="models.carpools[$index-1].formattedDay != c.formattedDay">
 			<div class="row">
-				<div class="col_4 line_hr"></div>
+				<div class="col_4"><hr class="line_hr"></div>
 				<div class="col_2 c fg3">{{c.formattedDay}}</div>
-				<div class="col_4 line_hr"></div>
+				<div class="col_4"><hr class="line_hr"></div>
 			</div>
 		</div>
 		<div class="box_carpool bgw shdw2" ng-repeat-end>
@@ -237,7 +237,7 @@
 			</div>
 			<div class="row">
 				<div class="col_10">
-					<input class="u c" type="text" ng-model="models.dest.carpoolTime" datetime-picker date-format="yyyy-MM-dd HH:mm" readonly>
+					<input class="u c" type="text" ng-model="models.dest.carpoolTime" date-time auto-close="true" readonly>
 				</div>
 			</div>
 			</form>
@@ -277,7 +277,7 @@
 <script src="./cordova.js"></script>
 <script src="./js/lib/angular.min.js"></script>
 <script type="text/javascript" src="http://apis.daum.net/maps/maps3.js?apikey=fc0c5af4de65a88b6a708e9855ff9fe1&libraries=services"></script>
-<script src="./js/lib/angularjs-datetime-picker.min.js"></script>
+<script src="./js/lib/angular-datepicker.js"></script>
 <script src="./js/kcp_carpool.js"></script>
 </body>
 </html>

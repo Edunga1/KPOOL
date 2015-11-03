@@ -8,20 +8,21 @@
 
 // 카풀 서버와 디바이스 정보
 var KCP = {
-	domain:				"http://glda007.cafe24.com",	// 서버 URL
-	// deviceid:			"a",									// device id for test
-	deviceid:			null,									// device id
+	domain:				"http://localhost:8080/KumohCarPool",	// 서버 URL
+	deviceid:			"a",									// device id for test
+	// deviceid:			null,									// device id
 	regid:				null,									// google gcm regid
 };
 
 // mobile 뒤로가기 버튼 막음
 document.addEventListener("backbutton", function (e){
-	e.preventDefault();
+	var res = confirm("종료하시겠습니까?");
+	if(res) navigator.app.exitApp();
 }, false);
 
 // device 정보 획득 후 angularjs 부트스트랩
-// document.addEventListener("DOMContentLoaded", function(){	// for test
-document.addEventListener("deviceready", function(){
+document.addEventListener("DOMContentLoaded", function(){	// for test
+// document.addEventListener("deviceready", function(){
 
 	// 푸쉬 Receive / Regist Callback function - ANDROID
 	// onNotification***은 반드시 window의 멤버함수로 존재해야 함
@@ -109,7 +110,7 @@ document.addEventListener("deviceready", function(){
 	angular.bootstrap(document, ['kcp']);
 }, false);
 
-var module = angular.module("kcp", ["angularjs-datetime-picker"])
+var module = angular.module("kcp", ["datePicker"])
 .service("UtilService", function(){
 
 	// 10미만 정수를 받아 2자리 수로 변환하여 반환한다.
@@ -159,6 +160,13 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 			this.map.marker.setDraggable(true);
 		}
 	};
+	
+	// 지도 드래그 가능 설정
+	// res: true 시 가능, false 시 불가능
+	this.setDraggable = function(res){
+		this.map.map.setDraggable(false);
+		this.map.marker.setDraggable(false);
+	}
 	
 	// marker 이동
 	this.moveMarker = function(lat, lng){
@@ -501,8 +509,19 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 			
 		).then(
 			function(response){
-				$scope.destForm.$setPristine();		// 변경 내역 초기화
-				$scope.models.dest.isExist = true;
+				if(response.res){
+					$scope.destForm.$setPristine();		// 변경 내역 초기화
+					$scope.models.dest.isExist = true;
+				}else{
+					$scope.models.dest.startPoint = "";
+					$scope.models.dest.arrivePoint = "";
+					$scope.models.dest.carpoolTime = "";
+				}
+			},
+			function(response){
+				$scope.models.dest.startPoint = "";
+				$scope.models.dest.arrivePoint = "";
+				$scope.models.dest.carpoolTime = "";
 			}
 		);
 	}
@@ -724,6 +743,8 @@ var module = angular.module("kcp", ["angularjs-datetime-picker"])
 	return {
 		link: function(scope, element, attrs){
 			MapService.init(element[0], 36.1425305, 128.394327);
+			if(attrs.mapDraggable == "false")
+				MapService.setDraggable(false);
 		}
 	}
 })
