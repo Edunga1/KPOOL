@@ -32,7 +32,7 @@ public class DataExceptionHandler {
 		// 만약 특정 값에 대해 비어있으면 null 이 된다. 
 		for( Map.Entry<String, Object> value : param.entrySet() )
 		{
-			System.out.println("DEBUG : "+ value.getKey() + " : " + value.getValue());
+//			System.out.println("DEBUG : "+ value.getKey() + " : " + value.getValue());
 			if (
 					param.containsKey("userId") == true &&
 					param.containsKey("startPoint") == true &&
@@ -76,14 +76,14 @@ public class DataExceptionHandler {
 		// 데이터 예외에 대한 값 
 		boolean isValidate = true;
 		
-		if(param.get("startPoint")!="")
-			System.out.println("성공");
+//		if(param.get("startPoint")!="")
+//			System.out.println("성공");
 		
 		// 모든 Map 객체 안에 있는 값들에 대하여 null 검사를 한다.  
 		// 만약 특정 값에 대해 비어있으면 null 이 된다. 
 		for( Map.Entry<String, Object> value : param.entrySet() )
 		{
-			System.out.println("DEBUG : "+ value.getKey() + " : " + value.getValue());
+//			System.out.println("DEBUG : "+ value.getKey() + " : " + value.getValue());
 			if ( 
 					param.containsKey("userId") == true && 
 					param.containsKey("startPoint") == true &&
@@ -92,7 +92,7 @@ public class DataExceptionHandler {
 					// regId는 테스팅을 위해 안넣음 
 				)
 			{
-				System.out.println("진입1");
+//				System.out.println("진입1");
 				
 				// 키는 있는 데 값이 null 이면, false
 				if( 
@@ -126,7 +126,7 @@ public class DataExceptionHandler {
 		//만약 특정 값에 대해 비어있으면 null 이 된다. 
 		for( Map.Entry<String, Object> value : param.entrySet() )
 		{
-			System.out.println("DEBUG : "+ value.getKey() + " : " + value.getValue());
+//			System.out.println("DEBUG : "+ value.getKey() + " : " + value.getValue());
 			if ( 
 					param.containsKey("userId") == true && 
 					param.containsKey("cpBoardId") == true &&
