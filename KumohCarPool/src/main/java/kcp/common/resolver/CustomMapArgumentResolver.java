@@ -30,8 +30,6 @@ public class CustomMapArgumentResolver implements HandlerMethodArgumentResolver 
 				commandMap.put(key, Integer.parseInt(webRequest.getParameter(key)));
 			} else if (key == "userId" || key.equals("userId")) {
 				commandMap.put(key, MD5Encryptor.encryptToMD5(webRequest.getParameter(key)));
-			} else if (key == "carpoolTime" ||  key.equals("carpoolTime")) {
-				commandMap.put(key, webRequest.getParameter(key).replaceAll("[TZ]", " "));
 			} else {
 				commandMap.put(key, webRequest.getParameter(key));
 			} 
