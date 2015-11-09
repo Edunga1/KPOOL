@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function(){	// for test
 		}
 	}
 	
-	angular.bootstrap(document, ['kcp']);
+	angular.bootstrap(document, ["kcp"]);
 }, false);
 
 var module = angular.module("kcp", ["datePicker"])

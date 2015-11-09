@@ -287,8 +287,8 @@ input, textarea, select {
 }*/
 .line_hr {
 	width: 75%;
-	height: 1px;
-	background-color: #707273;
+	border-top: none;
+	border-bottom-color: #707273;
 }
 /* grid */
 .row {
