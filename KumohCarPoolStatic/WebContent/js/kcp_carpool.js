@@ -505,8 +505,7 @@ var module = angular.module("kcp", ["datePicker"])
 		AjaxService.insertDest(
 			$scope.models.dest.startPoint,
 			$scope.models.dest.arrivePoint,
-			$scope.models.dest.carpoolTime
-			
+			UtilService.ms2foramttedTime($scope.models.dest.carpoolTime)
 		).then(
 			function(response){
 				if(response.res){
@@ -657,6 +656,8 @@ var module = angular.module("kcp", ["datePicker"])
 			}
 		}
 		
+		$scope.formData.carpoolTime = UtilService.ms2foramttedTime($scope.formData.carpoolTime);
+		
 		AjaxService.insertCarpool($scope.formData).then(
 			function(response){
 				$scope.goToList();
@@ -674,6 +675,8 @@ var module = angular.module("kcp", ["datePicker"])
 				return false;
 			}
 		}
+		
+		$scope.formData.carpoolTime = UtilService.ms2foramttedTime($scope.formData.carpoolTime);
 		
 		AjaxService.updateCarpool($scope.formData).then(
 			function(response){
