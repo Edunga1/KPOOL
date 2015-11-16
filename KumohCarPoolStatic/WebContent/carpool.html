@@ -222,10 +222,13 @@
 			</div>
 			<div class="row boundary">
 				<div class="col_5">
-					<input class="u c" type="text" ng-model="models.dest.startPoint">
+					<input class="u c" type="text" ng-model="models.dest.startPoint" list="plist">
+					<datalist id="plist">
+						<option value="{{p}}" ng-repeat="p in pointList">
+					</datalist>
 				</div>
 				<div class="col_5">
-					<input class="ul c" type="text" ng-model="models.dest.arrivePoint">
+					<input class="ul c" type="text" ng-model="models.dest.arrivePoint" list="plist">
 				</div>
 			</div>
 			<div class="row">
