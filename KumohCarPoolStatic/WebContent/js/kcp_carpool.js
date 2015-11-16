@@ -112,6 +112,9 @@ document.addEventListener("DOMContentLoaded", function(){	// for test
 
 var module = angular.module("kcp", ["datePicker"])
 .service("UtilService", function(){
+	
+	// 출발지 / 목적지 목록
+	this.pointList = ["학교", "구미역", "터미널", "옥계", "인동", "대구"];
 
 	// 10미만 정수를 받아 2자리 수로 변환하여 반환한다.
 	// 반환된 값은 문자열로 타입변경 된다.
@@ -392,6 +395,9 @@ var module = angular.module("kcp", ["datePicker"])
 		}
 	}
 	
+	// 출발지 / 도착지 목록
+	$scope.pointList = UtilService.pointList;
+	
 	// 카풀 로드
 	$scope.loadmore = function(){
 		AjaxService.selectCarpoolList(pgn).then(
@@ -616,6 +622,9 @@ var module = angular.module("kcp", ["datePicker"])
 
 	$scope.MapService = MapService;
 	$scope.modal = "";
+	
+	// 출발지 / 도착지 목록
+	$scope.pointList = UtilService.pointList;
 	
 	// input에 대한 model
 	$scope.formData = {

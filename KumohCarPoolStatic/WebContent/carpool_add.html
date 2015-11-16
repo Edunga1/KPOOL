@@ -37,10 +37,13 @@
 		</div>
 		<div class="row boundary">
 			<div class="col_5">
-				<input class="u left" type="text" name="startPoint" ng-model="formData.startPoint">
+				<input class="u left" type="text" name="startPoint" ng-model="formData.startPoint" list="plist">
+				<datalist id="plist">
+					<option value="{{p}}" ng-repeat="p in pointList">
+				</datalist>
 			</div>
 			<div class="col_5">
-				<input class="ul left" type="text" name="arrivePoint" ng-model="formData.arrivePoint">
+				<input class="ul left" type="text" name="arrivePoint" ng-model="formData.arrivePoint" list="plist">
 			</div>
 		</div>
 		<div class="row">
