@@ -1,3 +1,3 @@
 # KumohCarPool
 KIT CarPool HybridApp
-Created By ParWooHyun, ParkDongWook 
+Created By WooHyunPark, DongWookPark
