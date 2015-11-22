@@ -74,8 +74,6 @@ public class DestinationController {
 		// 이미 설정한 목적지가 있다면
 		if (targetDest != null) {
 			List<Destination> destinationLists = destinationDao.selectDestination();
-			// 매칭 서비스를 위한 객체 생성
-//			DestinationMatchingService destMatchingService = new DestinationMatchingService();
 			// 매칭 함수 호출
 			Map<String,Object> reultMap = DestinationMatchingService.calculateDestinationMatching(targetDest, destinationLists );
 			res = true;

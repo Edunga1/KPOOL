@@ -222,10 +222,13 @@
 			</div>
 			<div class="row boundary">
 				<div class="col_5">
-					<input class="u c" type="text" ng-model="models.dest.startPoint">
+					<input class="u c" type="text" ng-model="models.dest.startPoint" list="plist">
+					<datalist id="plist">
+						<option value="{{p}}" ng-repeat="p in pointList">
+					</datalist>
 				</div>
 				<div class="col_5">
-					<input class="ul c" type="text" ng-model="models.dest.arrivePoint">
+					<input class="ul c" type="text" ng-model="models.dest.arrivePoint" list="plist">
 				</div>
 			</div>
 			<div class="row">
@@ -267,7 +270,7 @@
 			</div>
 		</div>
 		<div class="wrap_footer">
-			<input class="btn btn_blank fgp" type="button" value="카풀만들기" ng-show="match.isMatching" ng-click="createCarpool()">
+			<input class="btn btn_blank fgp" type="button" value="카풀만들기" ng-show="models.matching.isMatching" ng-click="createCarpool()">
 		</div>
 	</div>
 </div>

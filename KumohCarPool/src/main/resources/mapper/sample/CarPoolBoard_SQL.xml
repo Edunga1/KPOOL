@@ -44,11 +44,6 @@
 
 	<!-- 전체 카풀 목록 로드 -->
 	<select id="selectBoardList" parameterType="map" resultMap="carpoolboardResultMap">
-<!-- 		<![CDATA[
-SELECT * FROM Carpoolboard WHERE
-				TIMESTAMP(Now()) < carpoolTime ORDER BY carpoolTime ASC LIMIT #{pageIndex}, #{pageNumber}
-		]]> -->
-		<!-- 'b' -> userId로 바꿔야한다.  -->
 	<![CDATA[
 SELECT
             *,
@@ -97,13 +92,15 @@ SELECT
          ON
             cp.cpBoardId = att.cpBoardId 
          WHERE
+         (
              att.userId = #{userId}
              OR cp.writer = #{userId}
+         )
 			AND
 			 TIMESTAMP(Now()- INTERVAL 1 DAY) < carpoolTime 
         	 GROUP BY cp.cpBoardId ORDER BY carpoolTime 
 	]]>
-	</select><!--attendant cpBoardId 바꿔야할수도잇 -->
+	</select>
 
 	<!-- 카풀 게시글 하나만 로드 -->
 	<select id="selectOne" parameterType="map" resultMap="carpoolboardResultMap">

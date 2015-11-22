@@ -2,6 +2,7 @@ package kcp.sample.service;
 
 import java.util.Map;
 
+// 회원 등록 시 포켓몬 이름 랜덤 생성
 public class AliasAddingService {
 	
 	public enum Poketmon

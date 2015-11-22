@@ -8,8 +8,9 @@
 
 // 카풀 서버와 디바이스 정보
 var KCP = {
-	domain:				"http://localhost:8080/KumohCarPool",	// 서버 URL
-	deviceid:			"a",									// device id for test
+	// domain:				"http://localhost:8080/KumohCarPool",	// 서버 URL
+	domain:				"http://glda007.cafe24.com",	// 서버 URL
+	deviceid:			"c",									// device id for test
 	// deviceid:			null,									// device id
 	regid:				null,									// google gcm regid
 };
@@ -107,11 +108,14 @@ document.addEventListener("DOMContentLoaded", function(){	// for test
 		}
 	}
 	
-	angular.bootstrap(document, ['kcp']);
+	angular.bootstrap(document, ["kcp"]);
 }, false);
 
 var module = angular.module("kcp", ["datePicker"])
 .service("UtilService", function(){
+	
+	// 출발지 / 목적지 목록
+	this.pointList = ["학교", "구미역", "터미널", "옥계", "인동", "대구"];
 
 	// 10미만 정수를 받아 2자리 수로 변환하여 반환한다.
 	// 반환된 값은 문자열로 타입변경 된다.
@@ -392,6 +396,9 @@ var module = angular.module("kcp", ["datePicker"])
 		}
 	}
 	
+	// 출발지 / 도착지 목록
+	$scope.pointList = UtilService.pointList;
+	
 	// 카풀 로드
 	$scope.loadmore = function(){
 		AjaxService.selectCarpoolList(pgn).then(
@@ -505,8 +512,7 @@ var module = angular.module("kcp", ["datePicker"])
 		AjaxService.insertDest(
 			$scope.models.dest.startPoint,
 			$scope.models.dest.arrivePoint,
-			$scope.models.dest.carpoolTime
-			
+			UtilService.ms2foramttedTime($scope.models.dest.carpoolTime)
 		).then(
 			function(response){
 				if(response.res){
@@ -618,6 +624,9 @@ var module = angular.module("kcp", ["datePicker"])
 	$scope.MapService = MapService;
 	$scope.modal = "";
 	
+	// 출발지 / 도착지 목록
+	$scope.pointList = UtilService.pointList;
+	
 	// input에 대한 model
 	$scope.formData = {
 		numberOfPersons: 4,
@@ -657,6 +666,8 @@ var module = angular.module("kcp", ["datePicker"])
 			}
 		}
 		
+		$scope.formData.carpoolTime = UtilService.ms2foramttedTime($scope.formData.carpoolTime);
+		
 		AjaxService.insertCarpool($scope.formData).then(
 			function(response){
 				$scope.goToList();
@@ -674,6 +685,8 @@ var module = angular.module("kcp", ["datePicker"])
 				return false;
 			}
 		}
+		
+		$scope.formData.carpoolTime = UtilService.ms2foramttedTime($scope.formData.carpoolTime);
 		
 		AjaxService.updateCarpool($scope.formData).then(
 			function(response){

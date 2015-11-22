@@ -20,7 +20,6 @@ import kcp.sample.service.AliasAddingService;
 import kcp.sample.service.DataExceptionHandler;
 import kcp.sample.service.DestinationMatchingService;
 import kcp.sample.service.MessagePushService;
-import kcp.sample.vo.Attendant;
 import kcp.sample.vo.CarpoolBoard;
 import kcp.sample.vo.Comment;
 import kcp.sample.vo.Destination;
@@ -229,7 +228,6 @@ public class CarPoolBoardController {
 				Map<String, Object> param = new HashMap<String, Object>();
 				List<Destination> dests = destinationDao.selectDestination();
 				
-//				DestinationMatchingService destMatchingService = new DestinationMatchingService();
 				MessagePushService messagePushService = new MessagePushService();
 				param.put("dests", dests);
 				// 매칭 결과를 구분하기 위한 변수

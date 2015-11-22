@@ -12,7 +12,7 @@
 
   <!-- 모든 메시지를 로드한다. -->
   <select id="selectMessage" parameterType="map" resultMap="messageResultMap">
-  	select * from Message where userId = #{userId}
+  	select * from Message where userId = #{userId} order by messageId DESC
   </select>
   
   <!-- 같은 메시지를 여러 사용자가 한번에 insert 되어야 한다.  userId는 변하면서 message 값은 고정이어야 한다.-->
